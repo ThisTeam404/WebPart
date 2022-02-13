@@ -77,6 +77,26 @@ class App extends React.Component{
       });
   }
 
+  fetchDB(){
+    fetch('http://localhost:3000/database', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log(response)
+        return response.json()
+      })
+      .then(resp =>{
+        console.log(resp)
+        this.setState({...this.state, data:resp})
+      })
+      .catch(e => {
+            
+      });
+  }
+
   render() { 
     return(
       <div className="App">
@@ -100,6 +120,8 @@ class App extends React.Component{
           >
             Get Secret Stuff
           </button>
+
+          <button title='Fetch Database' onClick={()=> this.fetchDB()}>Fetch Databsse</button>
         
          {this.displaySecretDetails()}
       </div>

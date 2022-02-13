@@ -4,19 +4,23 @@ const path          = require('path')
 const bodyParser    = require('body-parser')
 const session       = require('express-session')
 const passport      = require('passport')
-const MySqlStore    = require('express-mysql-session')(session)
+// const MySqlStore    = require('express-mysql-session')(session)
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
 const MemoryStore = require('memorystore')(session)
 
-const options = {
-    host: 'localhost',
-	port: 3306,
-	user: 'session_test',
-	password: 'password',
-	database: 'session_test',
-    createDatabaseTable: true
-}
+const MySqlStore = require('express-session-sequelize')(session.Store)
+const {Sequelize, DataTypes, Op} = require('sequelize');
+const LockSmith = require('./Database/Tables/locksmith-table.js');
+const Key = require('./Database/Tables/key-table.js');
+const Job = require('./Database/Tables/job-table.js');
+const SessionTable = require('./Database/Tables/session-table.js');
+const sequelize = require('./Database/Tables/connection-instance.js')
+const { start } = require('repl')
+
+const sequelizeSessionStore = new MySqlStore({db: sequelize})
+  
+
+
 console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
 console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
 console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
@@ -30,7 +34,7 @@ app.use(express.json())
 
 app.use(session({
     secret: "Super Secret Keyboard",
-    store: sessionStore,
+    store: sequelizeSessionStore,
     resave: false,
     saveUninitialized: false
 }))
@@ -140,6 +144,25 @@ app.get('/secret2', isLoggedIn, (req, res)=>{
         "data":"This is the secret2 data from the server"
     }]
     res.send(JSON.stringify(string))
+})
+
+app.get('/database', isLoggedIn, (req, res)=>{
+
+    const startDB = async()=>{
+        sessionTB = await SessionTable.findAll();
+        console.log(`Object type: ${JSON.stringify(sessionTB)}`);
+        // myData = JSON.stringify(sessionTB);
+
+        const string = [{
+            "data": JSON.stringify(sessionTB)
+        }]
+        res.send(JSON.stringify(string))
+
+      };
+
+
+      startDB();
+
 })
 
 const PORT = 3000;
