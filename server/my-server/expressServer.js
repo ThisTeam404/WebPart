@@ -4,31 +4,36 @@ const path          = require('path')
 const bodyParser    = require('body-parser')
 const session       = require('express-session')
 const passport      = require('passport')
-// const MySqlStore    = require('express-mysql-session')(session)
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const MemoryStore = require('memorystore')(session)
+
+// const MemoryStore = require('memorystore')(session);
+
+//Notes:
+/*
+1. remind Justin about __dirname cause it's no longer the direct child
+directory of the root folder server.
+
+
+
+*/
 
 const MySqlStore = require('express-session-sequelize')(session.Store)
-const {Sequelize, DataTypes, Op} = require('sequelize');
-const LockSmith = require('./Database/Tables/locksmith-table.js');
-const Key = require('./Database/Tables/key-table.js');
-const Job = require('./Database/Tables/job-table.js');
-const SessionTable = require('./Database/Tables/session-table.js');
-const sequelize = require('./Database/Tables/connection-instance.js')
-const { start } = require('repl')
+
+
+const SessionTable = require('../Database/Tables/session-table.js');
+const sequelize = require('../Database/Tables/connection-instance.js')
 
 const sequelizeSessionStore = new MySqlStore({db: sequelize})
   
 
-
 console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
 console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
 console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
 console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
-//const sessionStore = new MySqlStore(options)
-const sessionStore = new MemoryStore({checkPeriod: 300000})
-
-app.use(express.static(path.join(__dirname, 'build')))
+// const sessionStore = new MySqlStore(options)
+// const sessionStore = new MemoryStore({checkPeriod: 300000})
+const runServer = () => {
+app.use(express.static(path.join(__dirname, '../build')))
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.json())
 
@@ -115,9 +120,9 @@ app.get(
         const string = [{
             "loginStatus":"true"
         }]
-        console.log(__dirname)
+        // console.log(__dirname)
         //res.send(JSON.stringify(string))
-        res.sendFile(__dirname + '/build/index.html')
+        res.sendFile(path.join(__dirname, '../build/index.html'))
     }
 )
 
@@ -165,7 +170,22 @@ app.get('/database', isLoggedIn, (req, res)=>{
 
 })
 
+app.put('/test', isLoggedIn, (req, res)=>{
+    console.log('****************************************')
+
+    console.log(req.body)
+
+    console.log('****************************************')
+
+})
+
+
+
 const PORT = 3000;
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`)
 })
+
+}
+
+module.exports = {runServer};
