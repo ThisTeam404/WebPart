@@ -1,7 +1,13 @@
 const { runServer } = require('./my-server/expressServer.js');
-const { getAllData, postData, putData } = require('./Database/db.js');
+const { getAllData, postData, putData, getJobTable } = require('./Database/db.js');
 
 
 runServer();
-getAllData();
-postData()
+// postData();
+// getAllData();
+
+// (async()=>{
+//     let myData = await getJobTable();
+//     console.log(myData);
+
+// })()

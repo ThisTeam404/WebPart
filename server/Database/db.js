@@ -6,8 +6,27 @@ const Key = require('./Tables/key-table.js');
 const Job = require('./Tables/job-table.js');
 
 
+ async function getJobTable(){
+
+    try{
+
+    return Job.findAll({
+        attributes: { exclude: [ 'createdAt', 'updatedAt', 'smithID'] },
+        raw: true
+    });
+} catch(error){
+
+     throw "Error from getJobTable() function under /Database/db.js"
+}
+
+}
+
+
+
+
 async function getAllData() {
 
+    // console.log('---------------------------------');
     //Has to be in this order
     //because otherwise not all rows of data will be retrieved
     //due to the fact that there could be more Key rows than Jobs and 
@@ -52,13 +71,13 @@ async function postData() {
     // await LockSmith.create({smithFName: 'Taylor', smithLName: 'Fong'});
 
     let myJob = {
-        "jobID": 55,
-        "jobDate": null,
-        "numbKeys": null,
-        "numbLocks": null,
-        "cost": "22.34",
-        "address": "667 Lock Ave",
-        "note": null,
+        "jobID": 20,
+        "jobDate": 12/19/2030,
+        "numbKeys": 12,
+        "numbLocks": 3,
+        "cost": "10000",
+        "address": "456 Thomas Road",
+        "note": 'Hi 2022. Have a fun year!',
         "smithID": 3
     }
     let myKey = {
@@ -78,7 +97,7 @@ async function postData() {
             "smithLName": "James",
 
         }
-        // await Job.create(myJob);
+        await Job.create(myJob);
         // await Key.create(myKey);
         // await LockSmith.create(mySmith);
 
@@ -90,17 +109,19 @@ async function postData() {
     // })
 }
 
-const myObject = {
-    tableName: "LockSmith",
-    myData: {
-        lastName: "Xiong",
-        id: 1
-    }
-};
+
+function sortJSONToCorrectTable(x){
+    const [jobID, cost, address, driveway] = x;
+
+}
+const myObject = {"jobID":"3333","cost":12,"address":"100 driveway"};
 
 // putData(myObject);
 
+
 async function putData(x) {
+
+const jobID = myObject.jobID;
 
     switch (x.tableName) {
         case "LockSmith":
@@ -154,6 +175,4 @@ async function deleteData() {
 //Will leave it for next sprint
 
 
-
-
-module.exports = { getAllData, postData, putData };
+module.exports = { getAllData, postData, putData, getJobTable };

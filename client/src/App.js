@@ -1,10 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
+import "./web.css"
+import React from 'react';
+import {DBTable} from './Table.js'
+import MyLogin from './components/MyLogin.js';
+import Footer from './components/footerComponent.js'
 
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
-
-import React, {useState,useEffect} from 'react';
-import ReactDOM from 'react-dom';
 
 /*
   - show google log in button
@@ -19,126 +19,15 @@ import ReactDOM from 'react-dom';
 
 
 
-class App extends React.Component{
-
-  state = {
-    isLoggedin: false,
-    status: "",
-    data: []
-  }
-
-  componentDidMount(){
-    this.checkIfLoggedIn()
-  }
-
-  checkIfLoggedIn(){
-    fetch('http://localhost:3000/isLoggedInCheck', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        console.log(response)
-        return response.json()
-      })
-      .then(resp =>{
-          console.log(resp.result)
-          if (resp.result == "false"){
-            this.setState({isLoggedin: false, status:"", data:[]})
-          }else if(resp.result == "true"){
-            this.setState({isLoggedin: true, status:"", data:[]})
-          }else{
-            this.setState({isLoggedin: false, status:"ERROR: did not ge back true or false", data:[]})
-          }
-      })
-      .catch(e => {
-            this.setState({isLoggedin: false, status: e.message, data:[]});
-      });
-  }
-
-  fetchSecretStuff(){
-    fetch('http://localhost:3000/secret', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        console.log(response)
-        return response.json()
-      })
-      .then(resp =>{
-        console.log(resp)
-        this.setState({...this.state, data:resp})
-      })
-      .catch(e => {
-            
-      });
-  }
-
-  fetchDB(){
-    fetch('http://localhost:3000/database', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        console.log(response)
-        return response.json()
-      })
-      .then(resp =>{
-        console.log(resp)
-        this.setState({...this.state, data:resp})
-      })
-      .catch(e => {
-            
-      });
-  }
+class App extends React.Component{  
 
   render() { 
-    return(
-      <div className="App">
-        <h1>Hello</h1>
-        <p>is logged in {this.state.isLoggedin.toString()}</p>
-        
-        {this.state.isLoggedin == false && (
-          <button 
-            title="Sign in with Google"
-            onClick={()=> window.location.href = "http://localhost:3000/login/google"}
-            value="Sign in with Google"
-          >
-            Sign in with Google
-          </button>
-        )}
-
-          <button 
-            title="Sign in with Google"
-            onClick={()=> this.fetchSecretStuff()}
-            value="Sign in with Google"
-          >
-            Get Secret Stuff
-          </button>
-
-          <button title='Fetch Database' onClick={()=> this.fetchDB()}>Fetch Databsse</button>
-        
-         {this.displaySecretDetails()}
-      </div>
+    return(<>
+        <MyLogin/>
+        <DBTable/>
+        <Footer/>
+      </>
     )
-  }
-
-  displaySecretDetails(){
-    if(this.state.isLoggedin == false){
-      return
-    }
-
-    return (
-    <div>
-      {this.state.data.map((d) => (
-          <p>{d.data}</p>
-      ))}
-    </div>)
   }
 }
 

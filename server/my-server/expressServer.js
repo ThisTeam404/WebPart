@@ -5,6 +5,8 @@ const bodyParser    = require('body-parser')
 const session       = require('express-session')
 const passport      = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { getAllData, postData, putData, getJobTable } = require('../Database/db.js');
+
 
 // const MemoryStore = require('memorystore')(session);
 
@@ -21,17 +23,12 @@ const MySqlStore = require('express-session-sequelize')(session.Store)
 
 
 const SessionTable = require('../Database/Tables/session-table.js');
+const JobTable = require('../Database/Tables/job-table.js');
 const sequelize = require('../Database/Tables/connection-instance.js')
 
 const sequelizeSessionStore = new MySqlStore({db: sequelize})
   
 
-console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
-console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
-console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
-console.log("Warning makes sure to switch from Memory Store to MySqlStore when in production")
-// const sessionStore = new MySqlStore(options)
-// const sessionStore = new MemoryStore({checkPeriod: 300000})
 const runServer = () => {
 app.use(express.static(path.join(__dirname, '../build')))
 app.use(bodyParser.urlencoded({extended: false}))
@@ -50,7 +47,7 @@ app.use(passport.session())
 passport.use(new GoogleStrategy({
     clientID: '486236566537-nors8u3nvf0n916l3j05bi58jd5c52u0.apps.googleusercontent.com',
     clientSecret: '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',
-    callbackURL: 'http://localhost:3000/google/return',
+    callbackURL: 'http://localhost:3000/auth/success',
     userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
     passReqToCallback: true
   },
@@ -95,14 +92,15 @@ function isLoggedIn(req, res, next) {
 app.get('/', (req, res)=>{
     console.log(__dirname)
     res.sendFile(__dirname + '/index.html')
+    // res.sendFile(path.join(__dirname, '../build/index.html'))
 })
 
 app.post('/', (req, res)=>{
     //console.log("Post Request Recieved" + ` ${req}`)
-    res.redirect('/login/google')
+    //res.redirect('/login/google')
 })
 
-app.get('/isLoggedInCheck', (req, res)=>{
+app.get('/auth/isLoggedInCheck', (req, res)=>{
     if (req.isAuthenticated()) {
         res.send({"result": "true"})
       } else {
@@ -110,11 +108,11 @@ app.get('/isLoggedInCheck', (req, res)=>{
       }
 })
 
-app.get('/login/google',
+app.get('/auth/login/google',
  passport.authenticate('google', {scope: ['profile', 'email'], failureRedirect: ['/']}))
 
 app.get(
-    '/google/return',
+    '/auth/success',
     passport.authenticate('google', {scope: ['profile', 'email'], failureRedirect: ['/']}),
     (req, res)=>{
         const string = [{
@@ -125,6 +123,15 @@ app.get(
         res.sendFile(path.join(__dirname, '../build/index.html'))
     }
 )
+
+app.post('/auth/logout', (req, res)=>{
+    console.log(req.body)
+    req.logOut()
+    const string = {
+        "data":"Successfully Logged out"
+    }
+    res.send(JSON.stringify(string))
+})
 
 app.get('/secret', isLoggedIn, (req, res)=>{
     const string = [{
@@ -154,9 +161,11 @@ app.get('/secret2', isLoggedIn, (req, res)=>{
 app.get('/database', isLoggedIn, (req, res)=>{
 
     const startDB = async()=>{
-        sessionTB = await SessionTable.findAll();
+
+        let sessionTB = await SessionTable.findAll();
+
         console.log(`Object type: ${JSON.stringify(sessionTB)}`);
-        // myData = JSON.stringify(sessionTB);
+        myData = JSON.stringify(sessionTB);
 
         const string = [{
             "data": JSON.stringify(sessionTB)
@@ -165,8 +174,33 @@ app.get('/database', isLoggedIn, (req, res)=>{
 
       };
 
-
       startDB();
+
+})
+
+app.get('/getKeyTable', (req, res)=>{
+
+   const getTable = async() => {
+       
+    let keyTable = await JobTable.findAll({
+        attributes: { exclude: [ 'createdAt', 'updatedAt', 'smithID'] },
+        raw: true
+    });
+
+    // console.log(`Database result:  + ${JSON.stringify(keyTable)}`);
+
+    res.send(JSON.stringify(keyTable));
+
+   }
+
+   getTable();
+
+})
+
+app.get('/updateJobTable',(req, res)=>{
+    console.log('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
+    console.log('updateJobTable : ' + req.body)
+
 
 })
 
