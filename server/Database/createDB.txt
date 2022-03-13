@@ -1,0 +1,33 @@
+
+CREATE TABLE JOB (
+	jobID int NOT NULL AUTO_INCREMENT,
+	jobdate datetime DEFAULT CURRENT_TIMESTAMP,
+	numkeys int,
+	numlocks int,
+	cost dec(7,2),
+	address varchar(100),
+	notes varchar(100),
+	primary key(jobID));
+
+CREATE TABLE KEYLOCK (
+	jobID int NOT NULL,
+	combination char(5) NOT NULL,
+    keyID int NOT NULL AUTO_INCREMENT ,
+	keyway char(3),
+	unit varchar(100),
+	door varchar(50),
+    keyLevelType enum('CK', 'MK', 'GMK') NOT NULL,
+	hasMK boolean,
+	bottomPins char(5),
+	masterPins char(5),
+	MKCombination char(5),
+	MKJobID int,
+	primary key(jobID, combination),
+    key(keyID),
+	foreign key(jobID) references JOB(jobID),
+	foreign key(MKJobID, MKCombination) references KEYLOCK(jobID, combination));
+
+
+Notes:
+
+keyLevelType: it will default to 'CK' if no value specified

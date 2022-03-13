@@ -1,6 +1,6 @@
 import React from 'react';
 import '../web.css'
-import navLogo from '../LogoIdea1.png'
+import navLogo from '../LogoIdea1.PNG'
 
 export default class Login extends React.Component {
 state = {

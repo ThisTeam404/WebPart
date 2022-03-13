@@ -5,7 +5,7 @@ const bodyParser    = require('body-parser')
 const session       = require('express-session')
 const passport      = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const { getAllData, postData, putData, getJobTable } = require('../Database/db.js');
+const { getData, createNewTuple, updateTuple, getJobTable } = require('../Database/db.js');
 
 
 // const MemoryStore = require('memorystore')(session);
@@ -178,41 +178,53 @@ app.get('/database', isLoggedIn, (req, res)=>{
 
 })
 
-app.get('/getKeyTable', (req, res)=>{
+app.get('/getData', (req, res)=>{
 
-   const getTable = async() => {
-       
-    let keyTable = await JobTable.findAll({
-        attributes: { exclude: [ 'createdAt', 'updatedAt', 'smithID'] },
-        raw: true
-    });
+//    const getTable = async() => {
+//     let keyTable = await JobTable.findAll({
+//         attributes: { exclude: [ 'createdAt', 'updatedAt', 'smithID'] },
+//         raw: true
+//     });
+//     res.send(JSON.stringify(keyTable));
 
-    // console.log(`Database result:  + ${JSON.stringify(keyTable)}`);
+//    }
 
-    res.send(JSON.stringify(keyTable));
-
-   }
-
-   getTable();
+//    getTable();
+        res.send(JSON.stringify(getData()));
 
 })
 
-app.get('/updateJobTable',(req, res)=>{
-    console.log('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
-    console.log('updateJobTable : ' + req.body)
 
+app.put('/updateTuple',(req, res)=>{
+    try{
 
+    updateTuple(req.body);
+    console.log(JSON.stringify(req.body, null, 4));
+    res.send(JSON.stringify({"status":"Success"}))
+
+    } catch{
+        throw ("Invalid data")
+        res.send()
+        //need to handle invalid data scenerio
+        
+    }
 })
 
-app.put('/test', isLoggedIn, (req, res)=>{
-    console.log('****************************************')
+app.post('/createNewTuple',(req, res)=>{
+    try{
 
-    console.log(req.body)
+        createNewTuple(req.body);
+        console.log(JSON.stringify(req.body, null, 4));
+        res.send(JSON.stringify({"status":"Success"}))
 
-    console.log('****************************************')
+    }catch{
+        throw ("Invalid data")
+        res.send()
+        //need to handle invalid data scenerio
 
+
+    }
 })
-
 
 
 const PORT = 3000;

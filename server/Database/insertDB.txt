@@ -1,0 +1,46 @@
+
+NOTE:
+1. Both jobID and keyID have the property AUTO_INCREMENT.
+2. Thus, we don't have to insert a value for jobID and keyID.
+3. However, we do have to insert the jobID(it must already exist) 
+value when creating a new tuple for the KEYLOCK table because it 
+needs to know right away.
+
+Mainly to me (Sia).
+In the backend server, the create job and create keylock tuple statements
+will run inside one function so i will create the job tuple first
+then fetch its id and use it for the jobID field when creating a keylock tuple.
+
+
+INSERT INTO JOB (numkeys, numlocks, cost, address, notes)
+VALUES (1, 1, 500.00, '1234 random blvd', 'beware of dog');
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (1, 1000);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (1, 1100);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (1, 1200);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (2, 1000);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (2, 1100);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (2, 1200);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (3, 1000);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (3, 1100);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (3, 1200);
+
+INSERT INTO KEYLOCK (jobID,combination)
+VALUES (4, 1000);

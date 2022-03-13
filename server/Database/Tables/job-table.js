@@ -2,41 +2,34 @@ const {Sequelize, DataTypes} = require('sequelize');
 const sequelize = require('./connection-instance.js');
 const Key = require('./key-table.js');
 
-const Job = sequelize.define('Job', {
+const Job = sequelize.define('JOB', {
     jobID: {
-        type:DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
+        type:  DataTypes.INTEGER.UNSIGNED ,
         primaryKey: true,
         autoIncrement: true
     },
-    jobDate: {
-        type: DataTypes.DATEONLY,
+    numkeys: {
+        type: DataTypes.INTEGER.UNSIGNED
     },
-    numbKeys: DataTypes.INTEGER.UNSIGNED,
-    numbLocks: DataTypes.INTEGER.UNSIGNED,
-    cost: DataTypes.DECIMAL(10,2),
+    numlocks: {
+        type: DataTypes.INTEGER.UNSIGNED
+    },
+    cost: {
+        type: DataTypes.DECIMAL(7,2)
+    },
     address: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
-    note: DataTypes.TEXT,
-    
+    notes: {
+        type: DataTypes.STRING
+    }
+}, {
+    tableName: 'JOB',
+    timestamps: false
+
 })
 
-Job.hasMany(Key, {
-    foreignKey: {
-        name: 'jobID',
-        primaryKey: true,
-        allowNull: false
-    }
-});
 
-Key.belongsTo(Job, {
-    foreignKey:{
-        name: 'jobID',
-        primaryKey: true,
-        allowNull: false
-    }
-})
+
 
 module.exports = Job;

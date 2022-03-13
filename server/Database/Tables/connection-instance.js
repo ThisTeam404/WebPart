@@ -1,4 +1,10 @@
 const {Sequelize, DataTypes} = require('sequelize');
+const cls = require('cls-hooked');
+
+
+
+const namespace = cls.createNamespace('csc-191');
+Sequelize.useCLS(namespace);
 
 const sequelize = new Sequelize("defaultdb", "doadmin", "dR6cuickQmKxFHjY",
 {

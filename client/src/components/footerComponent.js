@@ -1,5 +1,5 @@
 import React from 'react';
-import footerImg from '../T404LogoProto1.png'
+import footerImg from '../T404LogoProto1.PNG'
 
 export default class footer extends React.Component{
     render(){

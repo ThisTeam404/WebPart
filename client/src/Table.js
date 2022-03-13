@@ -5,11 +5,6 @@ import FetchWrapper from './FetchFolder/fetch-wrapper.js';
 export const DBTable = ()=> {
 
     const myData = [
-        // {name: 'James', age: 20},
-        // {name: 'Nick', age: 19},
-        // {name: 'Tom', age: 23},
-        // {name: 'Cruise', age: 25},
-        // {name: 'Taylor', age: 26}
         {jobID: '12', cost: 12, address: "100 driveway", status: true},
         {jobID: '13', cost: 500, address: "99 White House Drive", status: true}
     ]
@@ -17,43 +12,22 @@ export const DBTable = ()=> {
 
 
     useEffect(()=> {
-        getStudents()
-    },[])
+        getDatasFromDB()
+    }, [data]);
 
 
 
-    const url = "http://localhost:3000/getKeyTable";
+    const url = "http://localhost:3000/getData";
 
     const [data, setData] = useState(myData);
 
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
-
-
-        // fetch(url,{
-        //     method: 'GET',
-        //     headers: {
-        //       'Content-Type': 'application/json' }
-        //     }).then(resp=>resp.json()).then(myData => {
-        //     console.log("Fetched data: " + myData);
-        //     setData(myData)})
-
-        console.log('##################################');
-
-
-
-
-    const getStudents = () => {
+    const getDatasFromDB = () => {
         fetch(url)
         .then(resp=>resp.json())
-        .then(resp=>setData(resp))
-                fetch(url,{
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json' }
-            }).then(resp=>resp.json()).then(resp => {
-            console.log(`Fetched data:  ${JSON.stringify(resp)}`);
-            setData(resp)})
-            console.log('@@@@@@@@@@@@@@@@@@@@@');
+        .then(resp=>{
+            setData(resp)
+            console.log(`From table UI: ${resp}`);
+        })
 
     }
 
@@ -62,8 +36,6 @@ export const DBTable = ()=> {
         {title: 'Job ID', field: 'jobID'},
         {title: 'Cost', field: 'cost'},
         {title: 'Address', field: 'address'}
-        // {title: 'Name', field: 'name'},
-        // {title: 'Age', field: 'age'}
 
     ]
     
@@ -74,23 +46,19 @@ export const DBTable = ()=> {
             columns={columns}
             editable={{
                 onRowUpdate: (newData, oldData)=> new Promise((resolve, reject)=>{
-
-                    console.log('onRowUpdate: ' + JSON.stringify(newData));
-                    
-                    const {jobID} = newData;
-
-                    console.log('The jobID is :' + jobID);
                 
-                    fetch('http://localhost:3000/updateJobTable', {
+                    fetch('http://localhost:3000/updateTuple', {
                         method: "PUT",
                         headers: {
                             "Content-type": "application/json"
                         },
                         body: JSON.stringify(newData)
+
                     })
                     .then(resp=>resp.json())
                     .then(resp=>{
-                        getStudents()
+                        getDatasFromDB()        //Have to call getDatasFromDB() here otherwise it will be called first before the fetch 
+                                                //finishes its action
                         resolve()
                     })
                 })

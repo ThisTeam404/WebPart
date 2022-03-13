@@ -1,151 +1,163 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
 const sequelize = require('./Tables/connection-instance.js')
 
-const LockSmith = require('./Tables/locksmith-table.js');
+// const LockSmith = require('./Tables/locksmith-table.js');
 const Key = require('./Tables/key-table.js');
 const Job = require('./Tables/job-table.js');
 
 
- async function getJobTable(){
+async function getData() {
 
-    try{
-
-    return Job.findAll({
-        attributes: { exclude: [ 'createdAt', 'updatedAt', 'smithID'] },
-        raw: true
-    });
-} catch(error){
-
-     throw "Error from getJobTable() function under /Database/db.js"
-}
-
-}
-
-
-
-
-async function getAllData() {
-
-    // console.log('---------------------------------');
     //Has to be in this order
     //because otherwise not all rows of data will be retrieved
-    //due to the fact that there could be more Key rows than Jobs and 
-    //LockSmith rows. One job can have multiple keys. One smith can have
+    //due to the fact that there could be more Key instances than Jobs instances and 
+    //LockSmith instances. One job can have multiple keys. One smith can have
     //multiple jobs
 
-    const joinedTable = await Key.findAll({
-        include: {
-            model: Job,
-            include: [
-                LockSmith
-            ],
-            required: true
-        }
+    // const data = await Key.findAll({
+    //     attributes:['jobID', 'combination']
+        // include: {
+        //     model: Job,
+        //     attributes: ['jobID', 'numkeys'],
+        //     required: true
+        // }
+    // });
 
-    });
+    const data = await Job.findAll({
+        attributes:['jobID', 'numkeys', 'numlocks']
+
+        
+    })
+
+
+    return data;
+
+
+    // let mydata = sequelize.transaction(async (t1)=>{
+    //     return await Key.findAll({
+    //         include: {
+    //             model: Job,
+    //             include: [
+    //                 LockSmith
+    //             ],
+    //             required: true
+    //         }
+    
+    //     })
+    // })
+
 
     console.log('***********************************************');
     console.log('***********************************************');
-    console.log("AllData: " + JSON.stringify(joinedTable, null, 2));
     console.log('***********************************************');
     console.log('***********************************************');
 
 }
 
-//will most likely use this method
-//for inserting test data because the front end
-//wont have the feature to allow inserting new instances
-//of table (so basically new rows of data)
-async function postData() {
 
-    console.log('***********************************************');
-    console.log('***********************************************');
-    console.log("POST data ran!!!!");
-    console.log('***********************************************');
-    console.log('***********************************************');
-
-
-    //we should NOT call create Locksmith all the time
-    //only need a few locksmith not a different one for
-    //every job
-    // await LockSmith.create({smithFName: 'Taylor', smithLName: 'Fong'});
+async function createNewTuple(data) {
 
     let myJob = {
-        "jobID": 20,
-        "jobDate": 12/19/2030,
-        "numbKeys": 12,
-        "numbLocks": 3,
-        "cost": "10000",
-        "address": "456 Thomas Road",
-        "note": 'Hi 2022. Have a fun year!',
-        "smithID": 3
-    }
-    let myKey = {
-        "keyID": 2,
-        "unit": "110",
-        "keyway": "KW13",
-        "combination": 1000,
-        "createdAt": "2022-02-25T06:21:02.000Z",
-        "updatedAt": "2022-02-25T06:21:02.000Z",
-        "jobID": 55,
+        numkeys: data.numkeys,
+        numlocks: data.numlocks,
+        cost: data.cost,
+        address: data.address,
+        notes: data.notes
+        }
 
-    }
+  
+     sequelize.transaction(async (t1)=>{
+        let currentJob = await Job.create(myJob);
 
-    let mySmith = {
-            "smithID": 4,
-            "smithFName": "Lebron",
-            "smithLName": "James",
+
+        let mkKey = {
+            jobID: currentJob.jobID,
+            keyway: data.keyway,
+            combination: '03056',
+            unit: data.unit,
+            door: data.door,
+            keyLevelType: 'MK',
+            hasMk: false
+        }
+
+        let currentMK = await Key.create(mkKey);
+
+        
+        let childKey = {
+            jobID: currentJob.jobID,
+            keyway: data.keyway,
+            // combination: `${data.combination.concat('5')}`,
+            combination: data.combination,
+            unit: data.unit,
+            door: data.door,
+            keyLevelType: data.keyLevelType,
+            hasMk: data.hasMk,
+            bottomPins: currentMK.combination,
+            masterPins: data.masterPins,
+            MKCombination: currentMK.combination,
+            MKJobID: data.jobID
+        }
+
+  
+
+        if(data.hasMk){
+            await Key.create(childKey);
 
         }
-        await Job.create(myJob);
-        // await Key.create(myKey);
-        // await LockSmith.create(mySmith);
 
+     })
 
-    // await LockSmith.create({"smithID": 4, "smithFName": "Lebron","smithLName": "James"
-    // await Job.create({address: '119 StarWay', cost:20.25, smithID: 2});
-    // await Key.create({unit: "110", keyway: "KW13", combination: 1000, jobID: 2});
-
-    // })
-}
-
-
-function sortJSONToCorrectTable(x){
-    const [jobID, cost, address, driveway] = x;
+    //  sequelize.transaction(async(t2)=>{
+    //      await Key.create(myKey);
+    //  })
 
 }
-const myObject = {"jobID":"3333","cost":12,"address":"100 driveway"};
-
-// putData(myObject);
 
 
-async function putData(x) {
+//Right now only allowing update on the note field
+async function updateTuple(x) {
 
-const jobID = myObject.jobID;
+    sequelize.transaction(async (t1)=>{
+        await Job.update({
+            // jobID: x.cost,
+            // jobDate: x.jobDate,
+            // numbKeys: x.numbKeys,
+            // numbLocks: x.numbLocks,
+            // cost: x.cost,
+            notes: x.notes
+            // address: x.address,
 
-    switch (x.tableName) {
-        case "LockSmith":
-            await LockSmith.update({
-                smithLName: x.myData.lastName
-            }, {
-                where: {
-                    smithID: {
-                        [Op.eq]: x.myData.id
-                    }
+    
+        }, {
+            where: {
+                jobID: {
+                    [Op.eq]: x.jobID
                 }
-            })
-            break;
-        case "Job":
-            break;
-        case "Key":
-            break;
-    }
+            }
+        })
 
+    })
+
+    //Currently, we dont udpate anything from key attributes
+    sequelize.transaction(async (t2)=>{
+        await Key.update({
+
+        }, {
+            where:{
+                jobID: {
+                    [Op.eq]: x.jobID
+                },
+                combination: {
+                    [Op.eq]: x.combination
+                }
+            }
+        })
+    })
 }
 
 
 
-//Delete is the same idea as the putData() method
+//Delete is the same idea as the updateTuple() method
 //However, deleting data will be more complicated
 //in the sense that the data have relationship
 //so must address those relationship.
@@ -171,8 +183,5 @@ async function deleteData() {
 
 }
 
-//I can use bulk update to update multiple rows per table (not tables) at once
-//Will leave it for next sprint
 
-
-module.exports = { getAllData, postData, putData, getJobTable };
+module.exports = { getData, createNewTuple, updateTuple };
