@@ -7,6 +7,10 @@ const passport      = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { getData, createNewTuple, updateTuple, getJobTable } = require('../Database/db.js');
 
+const WEB_MODE_ENABLED = false
+
+const PORT = process.env.PORT || 3000;
+const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:' + PORT
 
 // const MemoryStore = require('memorystore')(session);
 
@@ -25,6 +29,7 @@ const MySqlStore = require('express-session-sequelize')(session.Store)
 const SessionTable = require('../Database/Tables/session-table.js');
 const JobTable = require('../Database/Tables/job-table.js');
 const sequelize = require('../Database/Tables/connection-instance.js')
+const { resolveSoa } = require('dns')
 
 const sequelizeSessionStore = new MySqlStore({db: sequelize})
   
@@ -47,13 +52,19 @@ app.use(passport.session())
 passport.use(new GoogleStrategy({
     clientID: '486236566537-nors8u3nvf0n916l3j05bi58jd5c52u0.apps.googleusercontent.com',
     clientSecret: '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',
-    callbackURL: 'http://localhost:3000/auth/success',
+    callbackURL: `${SITE_URL}/auth/success`,
     userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
     passReqToCallback: true
   },
   function verify(req, accessToken, refreshToken, profile, cb)
   {
     console.log('Logged in for %j}', profile.emails)
+    if (profile.id != '111540539535459025201'){
+        console.log("Wrong Google Account Logged in")
+    }
+    else{
+        console.log("Correct Google Account Logged in")
+    }
     // check if logged in with correct email, if not correct email then return to login page and display error
     cb(null, profile)
   }
@@ -91,8 +102,8 @@ function isLoggedIn(req, res, next) {
 
 app.get('/', (req, res)=>{
     console.log(__dirname)
-    res.sendFile(__dirname + '/index.html')
-    // res.sendFile(path.join(__dirname, '../build/index.html'))
+    //res.sendFile(__dirname + '/index.html')
+    res.sendFile(path.join(__dirname, '../build/index.html'))
 })
 
 app.post('/', (req, res)=>{
@@ -101,6 +112,10 @@ app.post('/', (req, res)=>{
 })
 
 app.get('/auth/isLoggedInCheck', (req, res)=>{
+    console.log("%j", req.body)
+    console.log("%j", req.params)
+    console.log("%j", req.query)
+    console.log("%j", req.session)
     if (req.isAuthenticated()) {
         res.send({"result": "true"})
       } else {
@@ -113,14 +128,15 @@ app.get('/auth/login/google',
 
 app.get(
     '/auth/success',
-    passport.authenticate('google', {scope: ['profile', 'email'], failureRedirect: ['/']}),
+    passport.authenticate('google', {scope: ['profile', 'email'], failureRedirect: ['/a']}),
     (req, res)=>{
         const string = [{
             "loginStatus":"true"
         }]
-        // console.log(__dirname)
+        console.log("isAuth? ", req.isAuthenticated())
         //res.send(JSON.stringify(string))
-        res.sendFile(path.join(__dirname, '../build/index.html'))
+        //res.sendFile(path.join(__dirname, '../build/index.html'))
+        res.redirect('/')
     }
 )
 
@@ -227,7 +243,6 @@ app.post('/createNewTuple',(req, res)=>{
 })
 
 
-const PORT = 3000;
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`)
 })

@@ -1,30 +1,38 @@
 import React from 'react';
 import '../web.css'
-import navLogo from '../LogoIdea1.PNG'
+
+import navLogo from '../LogoIdea1.png'
+import {DBTable} from '../Table.js'
+
+const WEB_MODE_ENABLED = false
+
+const PORT = process.env.PORT || 3000;
+const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:'+ PORT 
 
 export default class Login extends React.Component {
-state = {
-    isLoggedin: false,
-    status: "",
-    data: []
-  }
+  state = {
+      isLoggedin: false,
+      status: "",
+      data: []
+    }
+  
   componentDidMount(){
-    this.checkIfLoggedIn()
+    setTimeout(this.checkIfLoggedIn.bind(this), 2000) // delay to login check is needed so that check does not occur before auth process on server has finished
   }
 
   checkIfLoggedIn(){
-    fetch('http://localhost:3000/auth/isLoggedInCheck', {
+    fetch(SITE_URL + '/auth/isLoggedInCheck', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
     })
       .then(response => {
-        console.log(response)
+        //console.log(response)
         return response.json()
       })
       .then(resp =>{
-          console.log(resp.result)
+          //console.log(resp.result)
           if (resp.result == "false"){
             this.setState({isLoggedin: false, status:"", data:[]})
           }else if(resp.result == "true"){
@@ -39,7 +47,7 @@ state = {
   }
 
   logout = async () => {
-    const rawResponse = await fetch('http://localhost:3000/auth/logout', {
+    const rawResponse = await fetch(SITE_URL + '/auth/logout', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -51,25 +59,25 @@ state = {
   
     content.json()
       .then(resp =>{
-        console.log(resp.data)
+        //console.log(resp.data)
       })
 
     this.setState({...this.state, isLoggedin:false})
   };
 
   fetchSecretStuff(){
-    fetch('http://localhost:3000/secret', {
+    fetch(SITE_URL + '/secret', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
     })
       .then(response => {
-        console.log(response)
+        //console.log(response)
         return response.json()
       })
       .then(resp =>{
-        console.log(resp)
+        //console.log(resp)
         this.setState({...this.state, data:resp})
       })
       .catch(e => {
@@ -78,18 +86,18 @@ state = {
   }
 
   fetchDB(){
-    fetch('http://localhost:3000/database', {
+    fetch(SITE_URL + '/database', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
     })
       .then(response => {
-        console.log(response)
+        //console.log(response)
         return response.json()
       })
       .then(resp =>{
-        console.log(`fetchDB: ${resp}`)
+        //console.log(`fetchDB: ${resp}`)
         this.setState({...this.state, data:resp})
       })
       .catch(e => {
@@ -128,6 +136,8 @@ state = {
         </div>
 
         {this.displaySecretDetails()}
+        {this.state.isLoggedin ? <DBTable/> : false}
+
       </div>
     )
   }
@@ -146,6 +156,13 @@ state = {
   }
 
   displayLoginHtml(){
+    let button
+    if(!this.state.isLoggedin){
+      button = ()=>{return <button className="button btn btn-outline-success me-2" id="login" type="button" onClick={()=> window.location.href = SITE_URL+"/auth/login/google"}>Login</button>}
+    }else{
+      button = ()=>{return <button className="button btn btn-outline-success me-2" type="button" id="login" onClick={() => this.logout()} >Logout</button>}
+    }
+
     return(
       <div>
         <h1>Smiling Locksmith Database</h1>
@@ -155,16 +172,7 @@ state = {
               <ul className="navbar-nav">
                 <li className="nav-item"> 
                       <form className="container-fluid justify-content-start">
-                          <button className="button btn btn-outline-success me-2" id="login" type="button" onClick={()=> window.location.href = "http://localhost:3000/auth/login/google"}>Login</button>
-                      </form>
-                </li>
-                <li className="nav-item">
-                    <button className="button btn btn-outline-success me-2" type="button" id="login" onClick={() => this.logout()} >Logout</button>
-                </li>
-                <li className="nav-item">
-                    <form className="d-flex">
-                        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"></input>
-                        <button className="button btn btn-outline-success" type="submit">Search</button>
+                        {button()}
                       </form>
                 </li>
               </ul>

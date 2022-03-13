@@ -7,14 +7,7 @@ import Footer from './components/footerComponent.js'
 
 
 /*
-  - show google log in button
-  - on google log in button redirect to google login endpoint on server
-  - client will wait for success response from server and then update page to show that user
-  has logged in
-  - other buttons to fetch data from server
-
-  Things to do:
-  - create fetch and update page function
+  - further investigate bug where first login attempt will not automatically log in user
 */
 
 
@@ -24,7 +17,6 @@ class App extends React.Component{
   render() { 
     return(<>
         <MyLogin/>
-        <DBTable/>
         <Footer/>
       </>
     )

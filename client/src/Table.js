@@ -10,17 +10,22 @@ export const DBTable = ()=> {
     ]
 
 
-
+    /*
     useEffect(()=> {
         getDatasFromDB()
     }, [data]);
+    */
 
 
+    const WEB_MODE_ENABLED = false
 
-    const url = "http://localhost:3000/getData";
+    const PORT = process.env.PORT || 3000;
+    const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:'+ PORT 
+
+    const url = SITE_URL+"/getKeyTable";
 
     const [data, setData] = useState(myData);
-
+    /*
     const getDatasFromDB = () => {
         fetch(url)
         .then(resp=>resp.json())
@@ -30,7 +35,7 @@ export const DBTable = ()=> {
         })
 
     }
-
+    */
 
     const columns = [
         {title: 'Job ID', field: 'jobID'},
@@ -44,10 +49,12 @@ export const DBTable = ()=> {
             <MaterialTable title="Material Table"
             data = {data}
             columns={columns}
+            /*
             editable={{
                 onRowUpdate: (newData, oldData)=> new Promise((resolve, reject)=>{
                 
-                    fetch('http://localhost:3000/updateTuple', {
+                    /*
+                    fetch(SITE_URL+'/updateJobTable', {
                         method: "PUT",
                         headers: {
                             "Content-type": "application/json"
@@ -64,6 +71,7 @@ export const DBTable = ()=> {
                 })
                 
             }}
+            */
 
             />
 
