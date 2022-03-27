@@ -1,7 +1,6 @@
 import React from 'react';
 import '../web.css'
 
-import navLogo from '../LogoIdea1.png'
 import {DBTable} from '../Table.js'
 
 const WEB_MODE_ENABLED = false
@@ -166,7 +165,7 @@ export default class Login extends React.Component {
     return(
       <div>
         <h1>Smiling Locksmith Database</h1>
-        <img src={navLogo} className="mainpic"></img>
+
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="collapse navbar-collapse" id="navbarNavDropdown">          
               <ul className="navbar-nav">
@@ -182,7 +181,6 @@ export default class Login extends React.Component {
     )
   }
 
-
   /* This is old code for showing the login
   {this.state.isLoggedin == false && (
     <button 
@@ -194,6 +192,5 @@ export default class Login extends React.Component {
     </button>
   )}
   */
-
 
 }
