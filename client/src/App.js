@@ -15,10 +15,11 @@ import Footer from './components/footerComponent.js'
 class App extends React.Component{  
 
   render() { 
-    return(<>
+    return(
+      <div className='mainClass'>
         <MyLogin/>
         <Footer/>
-      </>
+      </div>
     )
   }
 }
