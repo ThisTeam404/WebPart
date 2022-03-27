@@ -6,7 +6,7 @@ export default class footer extends React.Component{
         return(
             <footer>
             By Team 404
-            <img src={footerImg} class="teamlogo"></img>
+            <img src={footerImg} className="teamlogo"></img>
           </footer>
         )
     }
