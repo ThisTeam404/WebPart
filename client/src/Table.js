@@ -9,11 +9,11 @@ export const DBTable = ()=> {
     ]
 
 
-    /*
+    
     useEffect(()=> {
         getDatasFromDB()
     }, [data]);
-    */
+    
 
 
     const WEB_MODE_ENABLED = false
@@ -21,28 +21,21 @@ export const DBTable = ()=> {
     const PORT = process.env.PORT || 3000;
     const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:'+ PORT 
 
-<<<<<<< Updated upstream
-    const url = SITE_URL+"/getKeyTable";
-=======
-    const [data, setData] = useState(myData);
-    const [selectedRows, setSelectedRows] = useState([])
-
->>>>>>> Stashed changes
+    const url = SITE_URL+"/getData";
 
     const [data, setData] = useState(myData);
-    /*
+    
     const getDatasFromDB = () => {
         fetch(url)
         .then(resp=>resp.json())
         .then(resp=>{
             setData(resp)
             console.log(`From table UI: ${resp}`);
-            // console.log(`From table UI: ${resp[1][0]}`);
 
         })
 
     }
-    */
+    
 
     const columns = [
         {title: 'Job ID', field: 'jobID',editable: 'never'},
@@ -67,12 +60,12 @@ export const DBTable = ()=> {
             <MaterialTable title="Material Table"
             data = {data}
             columns={columns}
-            /*
+            
             editable={{
                 // isEditable: rowData => rowData.name === 'Notes',
                 onRowUpdate: (newData, oldData)=> new Promise((resolve, reject)=>{
                 
-                    /*
+                    
                     fetch(SITE_URL+'/updateJobTable', {
                         method: "PUT",
                         headers: {
@@ -108,7 +101,7 @@ export const DBTable = ()=> {
                 })
                 
             }}
-            */
+            
 
             />
 

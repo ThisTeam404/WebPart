@@ -6,10 +6,10 @@ const cls = require('cls-hooked');
 const namespace = cls.createNamespace('csc-191');
 Sequelize.useCLS(namespace);
 
-const sequelize = new Sequelize("heroku_ed3dae3fae781e9", "b93ab15ea11431", "958d1e89",
+const sequelize = new Sequelize("defaultdb", "doadmin", "AVNS_cg4fmsbMEuF061I",
 {
-    host: 'us-cdbr-east-05.cleardb.net',
-    port: '3306',
+    host: 'db-csus-do-user-11282781-0.b.db.ondigitalocean.com',
+    port: '25060',
     dialect: 'mysql'
 });
 

@@ -11,12 +11,15 @@ const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'h
 export default class Login extends React.Component {
   state = {
       isLoggedin: false,
+      apiKey: "",
       status: "",
       data: []
     }
   
   componentDidMount(){
     setTimeout(this.checkIfLoggedIn.bind(this), 2000) // delay to login check is needed so that check does not occur before auth process on server has finished
+    setInterval(this.getAPIKey.bind(this), 5000)
+    console.log("Component mounted")
   }
 
   checkIfLoggedIn(){
@@ -25,6 +28,7 @@ export default class Login extends React.Component {
       headers: {
         'Content-Type': 'application/json'
       }
+      
     })
       .then(response => {
         //console.log(response)
@@ -45,6 +49,36 @@ export default class Login extends React.Component {
       });
   }
 
+  getAPIKey(){
+    console.log("Getting API Key")
+    fetch(SITE_URL + '/getAPIKey', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+      
+    })
+      .then(response => {
+        //console.log(response)
+        return response.json()
+      })
+      .then(resp =>{
+          console.log(resp[0].data)
+          const key = resp[0].data 
+          if (key != ""){
+            this.setState({...this.state, apiKey:key})
+          }else if(resp.result == "true"){
+            this.setState({isLoggedin: true, status:"", data:[]})
+          }else{
+            this.setState({...this.state, status:"ERROR: did not ge back true or false", apiKey:""})
+          }
+      })
+      .catch(e => {
+            console.log(e)
+            this.setState({isLoggedin: false, status: e.message, data:[]});
+      });
+  }
+
   logout = async () => {
     const rawResponse = await fetch(SITE_URL + '/auth/logout', {
       method: 'POST',
@@ -61,11 +95,32 @@ export default class Login extends React.Component {
         //console.log(resp.data)
       })
 
-    this.setState({...this.state, isLoggedin:false})
+    this.setState({...this.state, isLoggedin:false, apiKey:""})
   };
 
   fetchSecretStuff(){
-    fetch(SITE_URL + '/secret', {
+    fetch(SITE_URL + '/sendSecretStuff', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({data: "APPLE PIE"})
+    })
+      .then(response => {
+        //console.log(response)
+        return response.json()
+      })
+      .then(resp =>{
+        //console.log(resp)
+        this.setState({...this.state, data:resp})
+      })
+      .catch(e => {
+            
+      });
+  }
+
+  fetchGetApiKey(){
+    fetch(SITE_URL + '/database', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -76,8 +131,8 @@ export default class Login extends React.Component {
         return response.json()
       })
       .then(resp =>{
-        //console.log(resp)
-        this.setState({...this.state, data:resp})
+        //console.log(`fetchDB: ${resp}`)
+        this.setState({...this.state, data:resp[0]})
       })
       .catch(e => {
             
@@ -113,6 +168,7 @@ export default class Login extends React.Component {
 
         <div className="content">
           <p>is logged in {this.state.isLoggedin.toString()}</p>
+          {this.displayAPICode()}
 
           <button
             className='button btn btn-outline-success me-2' 
@@ -152,6 +208,17 @@ export default class Login extends React.Component {
           <p>{d.data}</p>
       ))}
     </div>)
+  }
+
+  displayAPICode(){
+    if(this.state.apiKey == ""){
+      return(
+        <p>API Key: </p>
+      )
+    }
+    return(
+      <p>API Key: {this.state.apiKey}</p>
+    )
   }
 
   displayLoginHtml(){

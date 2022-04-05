@@ -5,7 +5,10 @@ const bodyParser    = require('body-parser')
 const session       = require('express-session')
 const passport      = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const { getData, createNewTuple, updateTuple, getJobTable, deleteData } = require('../Database/db.js');
+
+const { getData, createNewTuple, updateTuple, deleteData } = require('../Database/db.js');
+
+const crypto = require('crypto')
 
 const WEB_MODE_ENABLED = false
 
@@ -32,7 +35,27 @@ const sequelize = require('../Database/Tables/connection-instance.js')
 const { resolveSoa } = require('dns')
 
 const sequelizeSessionStore = new MySqlStore({db: sequelize})
-  
+
+const API_KEY_LENGTH = 10;
+
+const generateAPIKey = () => {
+    // generate short password for api key
+    // display api key on screen if logged in
+    // invalidate api key after a set amount of time
+    let length = API_KEY_LENGTH
+    let arrayOfRandomNum = new Uint32Array(API_KEY_LENGTH)
+    crypto.webcrypto.getRandomValues(arrayOfRandomNum)
+    
+    let result           = "";
+    let characters       = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@#$%&?";
+    let charactersLength = characters.length;
+
+    arrayOfRandomNum.forEach((value, index, arr)=>{
+        result += characters.charAt(value % charactersLength)
+    })
+
+   return result;
+}
 
 const runServer = () => {
 app.use(express.static(path.join(__dirname, '../build')))
@@ -88,7 +111,22 @@ function isLoggedIn(req, res, next) {
     } else {
       res.redirect("/");
     }
-  } 
+  }
+
+function isApiKeyValid(apiKeyValue){
+    if(!apiKeyValue == app.locals.activeApiKey.keyValue){
+        return false
+    }
+    return true 
+}
+
+app.post('/sendSecretStuff', function (req, res) {
+    console.log(req.body['data'])
+    const string = [{
+    "data":"Server recievd your stuff: " + req.body['data']
+    }]
+    res.send(JSON.stringify(string))
+});
 
   app.get('/t', function (req, res) {
     const string = [{
@@ -121,6 +159,67 @@ app.get('/auth/isLoggedInCheck', (req, res)=>{
       } else {
         res.send({"result": "false"})
       }
+})
+
+app.get('/getAPIKey', isLoggedIn, (req, res)=>{
+    // Implementation for if there can only be one api key
+    const API_KEY_TIME_TO_LIVE = 1000 * 60 * 2 // ms in a second * number = how many seconds to live
+
+    function isApiKeyValid(apiKeyInfo){
+        currentTime = new Date()
+        if((currentTime - apiKeyInfo.timeOfCreation) > apiKeyInfo.timeToLiveInMS){
+            return false
+        }
+        return true
+    }
+
+    function KeyInfo(timeToLiveInMillisecond, keyValue){
+        this.timeToLiveInMS = timeToLiveInMillisecond
+        this.keyValue = keyValue
+        this.timeOfCreation = new Date() 
+    }
+
+    if (typeof req.app.locals.activeApiKey == 'undefined' || !isApiKeyValid(req.app.locals.activeApiKey)){ 
+        req.app.locals.activeApiKey = new KeyInfo(API_KEY_TIME_TO_LIVE, generateAPIKey())
+    }
+    
+    const string = [{
+        "data": req.app.locals.activeApiKey.keyValue
+    }]
+
+    console.log(req.app.locals.activeApiKey)
+    res.send(JSON.stringify(string))
+    
+    //console.log(apiKey)
+
+    /* Implementation for if there can be more than 1 api key
+    const removeDeadApiKeys = (arrOfApiKeyObjects) =>{
+        currentTime = new Date()
+        const result = arrOfApiKeyObjects.filter((value)=>{
+            console.log(currentTime - value.timeOfCreation)
+            return (currentTime - value.timeOfCreation) < value.timeToLiveInMS
+        })
+        return result
+    }
+
+    function KeyInfo(timeToLiveInMillisecond, keyValue){
+        this.timeToLiveInMS = timeToLiveInMillisecond
+        this.keyValue = keyValue
+        this.timeOfCreation = new Date() 
+    }
+
+    API_KEY_TIME_TO_LIVE = 1000 * 60 * 2 // ms in a second * number = how many seconds to live
+    emptyArr = []
+    if (typeof req.app.locals.activeApiKeys == 'undefined'){
+        req.app.locals.activeApiKeys = emptyArr.concat(new KeyInfo(API_KEY_TIME_TO_LIVE, apiKey))
+    }else{
+        req.app.locals.activeApiKeys = removeDeadApiKeys(req.app.locals.activeApiKeys)
+        req.app.locals.activeApiKeys = emptyArr.concat(req.app.locals.activeApiKeys, new KeyInfo(API_KEY_TIME_TO_LIVE, apiKey))
+    }
+    
+    console.log(req.app.locals.activeApiKeys)
+    res.send(JSON.stringify(string))
+    */
 })
 
 app.get('/auth/login/google',
