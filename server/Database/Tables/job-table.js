@@ -30,6 +30,4 @@ const Job = sequelize.define('JOB', {
 })
 
 
-
-
 module.exports = Job;

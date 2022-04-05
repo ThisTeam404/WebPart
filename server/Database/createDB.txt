@@ -6,7 +6,7 @@ CREATE TABLE JOB (
 	numlocks int,
 	cost dec(7,2),
 	address varchar(100),
-	notes varchar(100),
+	notes text,
 	primary key(jobID));
 
 CREATE TABLE KEYLOCK (
@@ -19,7 +19,8 @@ CREATE TABLE KEYLOCK (
     keyLevelType enum('CK', 'MK', 'GMK') NOT NULL,
 	hasMK boolean,
 	bottomPins char(5),
-	masterPins char(5),
+	masterPins1 char(5),
+	masterPins2 char(5),
 	MKCombination char(5),
 	MKJobID int,
 	primary key(jobID, combination),
@@ -28,6 +29,14 @@ CREATE TABLE KEYLOCK (
 	foreign key(MKJobID, MKCombination) references KEYLOCK(jobID, combination));
 
 
+
 Notes:
 
 keyLevelType: it will default to 'CK' if no value specified
+
+
+Error Code: 1451. Cannot delete or update a parent row: 
+a foreign key constraint fails 
+("defaultdb"."KEYLOCK", CONSTRAINT "KEYLOCK_ibfk_2" FOREIGN KEY ("MKJobID", "MKCombination") 
+REFERENCES "KEYLOCK" ("jobID", "combination"))
+

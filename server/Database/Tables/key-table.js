@@ -13,6 +13,9 @@ const Key = sequelize.define('KEYLOCK', {
         allowNull: false,
         primaryKey: true
     },
+    keyway: {
+        type: DataTypes.CHAR(3)        
+    },
     keyID: {
         type: DataTypes.INTEGER
     },
@@ -29,13 +32,16 @@ const Key = sequelize.define('KEYLOCK', {
         type: DataTypes.BOOLEAN
     },
     bottomPins: {
-        type: DataTypes.STRING(5)
+        type: DataTypes.CHAR(5)
     },
-    masterPins: {
-        type: DataTypes.STRING(5)
+    masterPins1: {
+        type: DataTypes.CHAR(5)
+    },
+    masterPins2: {
+        type: DataTypes.CHAR(5)
     },
     MKCombination: {
-        type: DataTypes.STRING(5)
+        type: DataTypes.CHAR(5)
     },
     MKJobID: {
         type: DataTypes.INTEGER
@@ -45,11 +51,5 @@ const Key = sequelize.define('KEYLOCK', {
     timestamps: false
 
   });
-
-//   (async ()=> {
-//     await Key.sync({alter:true})
-
-
-//   })()
 
 module.exports = Key;

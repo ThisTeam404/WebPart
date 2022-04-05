@@ -1,36 +1,33 @@
 const { runServer } = require('./my-server/expressServer.js');
-const { getData, createNewTuple, updateTuple } = require('./Database/db.js');
+const { getData, createNewTuple, updateTuple, deleteKeyTuple,
+deleteJobTuple } = require('./Database/db.js');
+const finalArray = require('./Database/testData');
 
+const JobTable = require('./Database/Tables/job-table.js');
 
 runServer();
-// postData();
-// getAllData();
-
-let testData1 = {
-    numkeys: 10,
-    numlocks: null,
-    cost: null,
-    address: null,
-    notes:'bird',
-    keyway: '',
-    combination: '03056',
-    unit: null,
-    door: null,
-    keyLevelType: 'CK',
-    hasMk: true,
-    bottomPins: null,
-    masterPins: null,
-    MKCombination: 123,
-    MKJobID: null
-
-}
 
 
 
-// (async()=>{
+// console.log(finalArray);
+// console.log(finalArray[0])
+// console.log(finalArray[1]);
+// console.log(finalArray[1][0].combination);
+// console.log(finalArray[1][1].hasMK);
+
+// for(let i = 1; i < finalArray[1].length; i++){
+//     console.log(finalArray[1][i].hasMK)
+
+// }
+
+
+
+(async()=>{
     // let myData = await getData();
     // console.log(myData);
-    // createNewTuple(testData1);
-    updateTuple({jobID: 1, notes: "new note"});
+    // console.log(finalArray[1][1].hasMK)
 
-// })()
+    createNewTuple(finalArray);
+
+
+})()

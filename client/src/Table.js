@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import MaterialTable from 'material-table';
-import FetchWrapper from './FetchFolder/fetch-wrapper.js';
 
 export const DBTable = ()=> {
 
@@ -22,7 +21,13 @@ export const DBTable = ()=> {
     const PORT = process.env.PORT || 3000;
     const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:'+ PORT 
 
+<<<<<<< Updated upstream
     const url = SITE_URL+"/getKeyTable";
+=======
+    const [data, setData] = useState(myData);
+    const [selectedRows, setSelectedRows] = useState([])
+
+>>>>>>> Stashed changes
 
     const [data, setData] = useState(myData);
     /*
@@ -32,15 +37,28 @@ export const DBTable = ()=> {
         .then(resp=>{
             setData(resp)
             console.log(`From table UI: ${resp}`);
+            // console.log(`From table UI: ${resp[1][0]}`);
+
         })
 
     }
     */
 
     const columns = [
-        {title: 'Job ID', field: 'jobID'},
-        {title: 'Cost', field: 'cost'},
-        {title: 'Address', field: 'address'}
+        {title: 'Job ID', field: 'jobID',editable: 'never'},
+        {title: 'Brand', field: 'keyway', editable: 'never'},
+        {title: 'Combination', field: 'combination', editable: 'never'},
+        {title: 'Bottom Pins', field: 'bottomPins', editable: 'never'},
+        {title: 'Master Pins 1', field: 'masterPins1', editable: 'never'},
+        {title: 'Master Pins 2', field: 'masterPins2', editable: 'never'},
+        {title: 'Mk Combination', field: 'MKCombination', editable: 'never'},
+        {title: 'Unit', field: 'unit', editable: 'never'},
+        {title: 'Door', field: 'door', editable: 'never'},
+        {title: 'Cost', field: 'cost',editable: 'never'},
+        {title: 'Address', field: 'address',editable: 'never'},
+        {title: 'NumKeys', field: 'numkeys',editable: 'never'},
+        {title: 'NumbLocks', field: 'numlocks',editable: 'never'},
+        {title: 'Notes', field: 'notes'},
 
     ]
     
@@ -51,6 +69,7 @@ export const DBTable = ()=> {
             columns={columns}
             /*
             editable={{
+                // isEditable: rowData => rowData.name === 'Notes',
                 onRowUpdate: (newData, oldData)=> new Promise((resolve, reject)=>{
                 
                     /*
@@ -68,6 +87,24 @@ export const DBTable = ()=> {
                                                 //finishes its action
                         resolve()
                     })
+                }),
+                onRowDelete: oldData =>
+                new Promise((resolve, reject) => {
+                    fetch('http://localhost:3000/deleteTuple', {
+                        method: "DELETE",
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body: JSON.stringify(oldData)
+
+                    })
+                    .then(resp=>resp.json())
+                    .then(resp=>{
+                        getDatasFromDB()        //Have to call getDatasFromDB() here otherwise it will be called first before the fetch 
+                                                //finishes its action
+                        resolve()
+                    })
+
                 })
                 
             }}

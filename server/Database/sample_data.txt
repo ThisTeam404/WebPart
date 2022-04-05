@@ -1,0 +1,20 @@
+
+//All first four are the same job
+
+INSERT INTO KEYLOCK VALUES(1, '03056', 1, 'SC1', 'Floor 1', NULL, 'MK', false, NULL, NULL, NULL, NULL);
+
+INSERT INTO KEYLOCK VALUES(1, '03456', 2, 'SC1', 'Floor 1', 'room 204', 'CK', true, '03456', '00400', '03056', 1);
+
+INSERT INTO KEYLOCK VALUES(1, '03052', 3, 'SC1', 'Floor 1', 'room 206', 'CK', true, '03052', '00004', '03056', 1);
+
+INSERT INTO KEYLOCK VALUES(1, '03050', 4, 'SC1', 'Floor 1', 'room 208', 'CK', true, '03050', '00006', '03056', 1);
+
+
+
+
+INSERT INTO KEYLOCK VALUES(2, '34521', 1, 'SC1', NULL, 'door 1', 'CK', false, '34521', NULL, NULL, NULL);
+
+INSERT INTO KEYLOCK VALUES(2, '25634', 2, 'SC1', NULL, 'front door', 'CK', false, '25634', NULL, NULL, NULL);
+
+INSERT INTO KEYLOCK VALUES(2, '34547', 3, 'SC1', NULL, 'living room', 'CK', false, '34547', NULL, NULL, NULL);
+

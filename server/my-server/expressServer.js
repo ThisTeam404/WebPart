@@ -5,7 +5,7 @@ const bodyParser    = require('body-parser')
 const session       = require('express-session')
 const passport      = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const { getData, createNewTuple, updateTuple, getJobTable } = require('../Database/db.js');
+const { getData, createNewTuple, updateTuple, getJobTable, deleteData } = require('../Database/db.js');
 
 const WEB_MODE_ENABLED = false
 
@@ -196,17 +196,15 @@ app.get('/database', isLoggedIn, (req, res)=>{
 
 app.get('/getData', (req, res)=>{
 
-//    const getTable = async() => {
-//     let keyTable = await JobTable.findAll({
-//         attributes: { exclude: [ 'createdAt', 'updatedAt', 'smithID'] },
-//         raw: true
-//     });
-//     res.send(JSON.stringify(keyTable));
+   const getTable = async() => {
+    
+    let myData = await getData();
 
-//    }
+    res.send(JSON.stringify(myData));
 
-//    getTable();
-        res.send(JSON.stringify(getData()));
+   }
+
+   getTable();
 
 })
 
@@ -232,6 +230,33 @@ app.post('/createNewTuple',(req, res)=>{
         createNewTuple(req.body);
         console.log(JSON.stringify(req.body, null, 4));
         res.send(JSON.stringify({"status":"Success"}))
+
+    }catch{
+        throw ("Invalid data")
+        res.send()
+        //need to handle invalid data scenerio
+
+
+    }
+})
+
+app.delete('/deleteTuple',(req, res)=>{
+    try{
+
+        const deleteTable = async() => {
+    
+            let myData = await deleteData(req.body);
+        
+            res.send(JSON.stringify(myData));
+        
+           }
+        
+           deleteTable();
+        
+        // console.log(JSON.stringify(req.body, null, 4));
+        res.send(JSON.stringify({"status":"Success"}))
+
+        
 
     }catch{
         throw ("Invalid data")
