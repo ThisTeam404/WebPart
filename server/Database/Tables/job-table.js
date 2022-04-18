@@ -11,9 +11,6 @@ const Job = sequelize.define('JOB', {
     numkeys: {
         type: DataTypes.INTEGER.UNSIGNED
     },
-    numlocks: {
-        type: DataTypes.INTEGER.UNSIGNED
-    },
     cost: {
         type: DataTypes.DECIMAL(7,2)
     },
