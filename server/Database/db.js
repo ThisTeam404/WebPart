@@ -27,22 +27,15 @@ async function getData() {
 
         // console.log(matchJob)
         const tempObj = {...matchJob, ...currKey}
-        //console.log("temp obj %j", tempObj)
+        // console.log(tempObj)
 
         return tempObj;
         
     }))
 
+
     return bothObject;
 
-}
-
-async function getDataOrganizedByJob(){
-    const jobData = await Job.findAll({
-        attributes:['jobID', 'numkeys', 'address', 'cost','jobdate','notes'],
-        raw: true
-
-    })
 }
 
 function convertJsonObjectFieldToType(obj, fieldName, type){
