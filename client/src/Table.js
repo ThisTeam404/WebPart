@@ -8,19 +8,27 @@ export const DBTable = ()=> {
         {jobID: '13', cost: 500, address: "99 White House Drive", status: true}
     ]
 
+    
 
     
     useEffect(()=> {
         getDatasFromDB()
     }, [data]);
     
+    /* 
+        - have endpoint that returns all job and key data sorted into json object:
+            {
+                jobarr[] {
+                    grandMaster
+                    master
+                    regular
+                }
+            }
 
-
-    const WEB_MODE_ENABLED = false
+    */
 
     const PORT = process.env.PORT || 3000;
-    const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:'+ PORT 
-
+    const SITE_URL = process.env.REACT_APP_WEB_MODE_ENABLED == "false" ? "http://localhost:" + PORT : process.env.REACT_APP_WEBSITE_URL 
     const url = SITE_URL+"/getData";
 
     const [data, setData] = useState(myData);
@@ -41,6 +49,7 @@ export const DBTable = ()=> {
         {title: 'Job ID', field: 'jobID',editable: 'never'},
         {title: 'Brand', field: 'keyway', editable: 'never'},
         {title: 'Combination', field: 'combination', editable: 'never'},
+        {title: 'KeyLevelType', field: 'keyLevelType',editable: 'never'},
         {title: 'Bottom Pins', field: 'bottomPins', editable: 'never'},
         {title: 'Master Pins 1', field: 'masterPins1', editable: 'never'},
         {title: 'Master Pins 2', field: 'masterPins2', editable: 'never'},
@@ -50,7 +59,6 @@ export const DBTable = ()=> {
         {title: 'Cost', field: 'cost',editable: 'never'},
         {title: 'Address', field: 'address',editable: 'never'},
         {title: 'NumKeys', field: 'numkeys',editable: 'never'},
-        {title: 'NumbLocks', field: 'numlocks',editable: 'never'},
         {title: 'Notes', field: 'notes'},
 
     ]
@@ -83,7 +91,7 @@ export const DBTable = ()=> {
                 }),
                 onRowDelete: oldData =>
                 new Promise((resolve, reject) => {
-                    fetch('http://localhost:3000/deleteTuple', {
+                    fetch(SITE_URL+'/deleteTuple', {
                         method: "DELETE",
                         headers: {
                             "Content-type": "application/json"

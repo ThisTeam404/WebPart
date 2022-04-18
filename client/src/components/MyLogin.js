@@ -1,16 +1,18 @@
 import React from 'react';
 import '../web.css'
 
-import {DBTable} from '../Table.js'
+import {DBTable} from '../UpdatedTable.js'
 
-const WEB_MODE_ENABLED = false
+console.log(process.env)
+
 
 const PORT = process.env.PORT || 3000;
-const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:'+ PORT 
+const SITE_URL = process.env.REACT_APP_WEB_MODE_ENABLED == "false" ? "http://localhost:" + PORT : process.env.REACT_APP_WEBSITE_URL 
 
 export default class Login extends React.Component {
   state = {
       isLoggedin: false,
+      isApiKeyDisplayed: false,
       apiKey: "",
       status: "",
       data: []
@@ -18,7 +20,8 @@ export default class Login extends React.Component {
   
   componentDidMount(){
     setTimeout(this.checkIfLoggedIn.bind(this), 2000) // delay to login check is needed so that check does not occur before auth process on server has finished
-    setInterval(this.getAPIKey.bind(this), 5000)
+    //setInterval(this.getAPIKey.bind(this), 5000)
+    setInterval(this.hideApiKey.bind(this), 25000)
     console.log("Component mounted")
   }
 
@@ -49,6 +52,10 @@ export default class Login extends React.Component {
       });
   }
 
+  hideApiKey(){
+    this.setState({...this.state, isApiKeyDisplayed:false})
+  }
+
   getAPIKey(){
     console.log("Getting API Key")
     fetch(SITE_URL + '/getAPIKey', {
@@ -66,7 +73,7 @@ export default class Login extends React.Component {
           console.log(resp[0].data)
           const key = resp[0].data 
           if (key != ""){
-            this.setState({...this.state, apiKey:key})
+            this.setState({...this.state, apiKey:key, isApiKeyDisplayed:true})
           }else if(resp.result == "true"){
             this.setState({isLoggedin: true, status:"", data:[]})
           }else{
@@ -74,8 +81,8 @@ export default class Login extends React.Component {
           }
       })
       .catch(e => {
-            console.log(e)
-            this.setState({isLoggedin: false, status: e.message, data:[]});
+        console.log(e)
+        this.setState({isLoggedin: false, status: e.message, data:[]});
       });
   }
 
@@ -119,26 +126,6 @@ export default class Login extends React.Component {
       });
   }
 
-  fetchGetApiKey(){
-    fetch(SITE_URL + '/database', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        //console.log(response)
-        return response.json()
-      })
-      .then(resp =>{
-        //console.log(`fetchDB: ${resp}`)
-        this.setState({...this.state, data:resp[0]})
-      })
-      .catch(e => {
-            
-      });
-  }
-
   fetchDB(){
     fetch(SITE_URL + '/database', {
       method: 'GET',
@@ -167,26 +154,11 @@ export default class Login extends React.Component {
         {this.displayLoginHtml()}
 
         <div className="content">
-          <p>is logged in {this.state.isLoggedin.toString()}</p>
+          <p className='me-2'> {this.state.isLoggedin ? "You are logged in" : "You are not logged in"}</p>
           {this.displayAPICode()}
+          {this.displayGetAPIKeyButton()}
 
-          <button
-            className='button btn btn-outline-success me-2' 
-            title="fetch secret stuff"
-            onClick={()=> this.fetchSecretStuff()}
-            value="fetch secret stuff"
-          >
-            Get Secret Stuff
-          </button>
-
-          <button 
-            title='Fetch Database' 
-            onClick={()=> this.fetchDB()}
-            className='button btn btn-outline-success me-2'
-          >
-              Fetch Databsse
-          </button>
-          {/* <button title='Fetch Database' onClick={()=> DBTable()}>Get Table </button> */}
+          
           
         </div>
 
@@ -210,8 +182,29 @@ export default class Login extends React.Component {
     </div>)
   }
 
+  displayGetAPIKeyButton(){
+    if(this.state.isLoggedin == false){
+      return
+    }
+
+    return (
+      <button
+        className='button btn btn-outline-success me-2' 
+        title="Click To Display API Key"
+        onClick={this.getAPIKey.bind(this)}
+        value="Click To Display API Key"
+      >
+        Click To Display API Key:
+      </button>
+    )
+  }
+
   displayAPICode(){
-    if(this.state.apiKey == ""){
+    if(this.state.isLoggedin == false){
+      return
+    }
+    
+    if(this.state.isApiKeyDisplayed == false){
       return(
         <p>API Key: </p>
       )

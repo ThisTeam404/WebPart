@@ -1,0 +1,33 @@
+Kaily's format:
+
+{"finalArray": {
+    "job": {
+        "numkeys": "4",
+        "cost": "100",
+        "address": "zzz",
+        "notes": "first tuple"
+    }, 
+    "keys": [
+        {
+        "keyway": "SC1",
+        "combination": "03050",
+        "unit": "unit 1",
+        "keyLevelType": "CK",
+        "hasMK": true,
+        "masterPins1": "",
+        "masterPins2": ""
+        },
+        {
+        "keyway": "SC1",
+        "combination": "03050",
+        "unit": "unit 1",
+        "keyLevelType": "CK",
+        "hasMK": "",
+        "masterPins1": "",
+        "masterPins2": ""
+        }
+
+    ], 
+    "apiKey": 123
+    }
+}

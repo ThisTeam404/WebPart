@@ -1,6 +1,1 @@
-set Web mode to true in:
-
-server/expressServer.js
-
-client/Table.js
-client/components/MyLogin.js
+set Web mode to true in: .env files in server folder and client folder

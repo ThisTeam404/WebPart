@@ -27,7 +27,7 @@ runServer();
     // console.log(myData);
     // console.log(finalArray[1][1].hasMK)
 
-    createNewTuple(finalArray);
+    //createNewTuple(finalArray);
 
 
 })()

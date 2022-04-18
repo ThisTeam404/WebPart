@@ -1,0 +1,21 @@
+// There needs to be a ".env" file in both the server and client folder. The .env file should look like below except with the variables assigned //the correct values
+
+REACT_APP_WEB_MODE_ENABLED="true"
+REACT_APP_WEBSITE_URL="https://web-login-test1.herokuapp.com"
+
+
+WEB_MODE_ENABLED="true"
+WEBSITE_URL="https://web-login-test1.herokuapp.com"
+
+DATABASE_HOST=""
+DATABASE_PORT=""
+DATABASE_TYPE=""
+DATABASE_USER=""
+DATABASE_PASSWORD=""
+DATABASE_DIALECT="mysql"
+
+GOOGLE_AUTH_CLIENT_ID=""
+GOOGLE_AUTH_SECRET=""
+GOOGLE_AUTH_CALLBACK_URL=""
+
+GOOGLE_AUTH_VALID_Email_ID="RandomID_asdasdad123"

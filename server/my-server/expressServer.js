@@ -5,15 +5,23 @@ const bodyParser    = require('body-parser')
 const session       = require('express-session')
 const passport      = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const fs = require('fs')
+
+require('dotenv').config()
+//console.log(process.env)
 
 const { getData, createNewTuple, updateTuple, deleteData } = require('../Database/db.js');
 
 const crypto = require('crypto')
 
-const WEB_MODE_ENABLED = false
-
 const PORT = process.env.PORT || 3000;
-const SITE_URL = WEB_MODE_ENABLED ? 'https://web-login-test1.herokuapp.com' : 'http://localhost:' + PORT
+const SITE_URL = process.env.WEB_MODE_ENABLED == "false" ? "http://localhost:" + PORT : process.env.WEBSITE_URL
+const GOOGLE_AUTH_CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID
+const GOOGLE_AUTH_SECRET = process.env.GOOGLE_AUTH_SECRET
+const GOOGLE_AUTH_CALLBACK_URL = process.env.WEB_MODE_ENABLED == "false" ? SITE_URL + "/auth/success" : process.env.GOOGLE_AUTH_CALLBACK_URL
+const GOOGLE_AUTH_VALID_Email_ID = process.env.GOOGLE_AUTH_VALID_Email_ID   // The Google Account email that the server will allow to log in
+
+console.log(SITE_URL, GOOGLE_AUTH_CALLBACK_URL)
 
 // const MemoryStore = require('memorystore')(session);
 
@@ -32,17 +40,39 @@ const MySqlStore = require('express-session-sequelize')(session.Store)
 const SessionTable = require('../Database/Tables/session-table.js');
 const JobTable = require('../Database/Tables/job-table.js');
 const sequelize = require('../Database/Tables/connection-instance.js')
-const { resolveSoa } = require('dns')
+//const { resolveSoa } = require('dns')
 
 const sequelizeSessionStore = new MySqlStore({db: sequelize})
 
 const API_KEY_LENGTH = 10;
+const API_KEY_TIME_TO_LIVE = 1000 * 60 * 2 // ms in a second * number = how many seconds to live
+
+// KeyInfo object builder
+function KeyInfo(timeToLiveInMillisecond, keyValue){
+    this.timeToLiveInMS = timeToLiveInMillisecond
+    this.keyValue = keyValue
+    this.timeOfCreation = new Date() 
+}
+
+function isAPIKeyExpired(apiKeyInfo){
+    currentTime = new Date()
+    if((currentTime - apiKeyInfo.timeOfCreation) > apiKeyInfo.timeToLiveInMS){
+        return true
+    }
+    return false
+}
+
+function isAPIKeyStringCorrect(incomingAPIKeyString, currentAPIKeyString){
+    if(incomingAPIKeyString == currentAPIKeyString){
+        return true
+    }
+    return false
+}
 
 const generateAPIKey = () => {
     // generate short password for api key
     // display api key on screen if logged in
     // invalidate api key after a set amount of time
-    let length = API_KEY_LENGTH
     let arrayOfRandomNum = new Uint32Array(API_KEY_LENGTH)
     crypto.webcrypto.getRandomValues(arrayOfRandomNum)
     
@@ -53,9 +83,12 @@ const generateAPIKey = () => {
     arrayOfRandomNum.forEach((value, index, arr)=>{
         result += characters.charAt(value % charactersLength)
     })
+    app.locals.activeApiKey = new KeyInfo(API_KEY_TIME_TO_LIVE, result)
 
    return result;
 }
+generateAPIKey()
+
 
 const runServer = () => {
 app.use(express.static(path.join(__dirname, '../build')))
@@ -73,20 +106,27 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 passport.use(new GoogleStrategy({
-    clientID: '486236566537-nors8u3nvf0n916l3j05bi58jd5c52u0.apps.googleusercontent.com',
-    clientSecret: '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',
-    callbackURL: `${SITE_URL}/auth/success`,
+    clientID: GOOGLE_AUTH_CLIENT_ID,
+    clientSecret: GOOGLE_AUTH_SECRET,
+    callbackURL: GOOGLE_AUTH_CALLBACK_URL,
     userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
     passReqToCallback: true
   },
   function verify(req, accessToken, refreshToken, profile, cb)
   {
     console.log('Logged in for %j}', profile.emails)
-    if (profile.id != '111540539535459025201'){
-        console.log("Wrong Google Account Logged in")
+    if (profile.emails != GOOGLE_AUTH_VALID_Email_ID){
+        console.log("\n\nWrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
+        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
+        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
+        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
+        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
+        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
+        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login \n\n")
+        //return cb("Attempted to login with invalid google account.", null)
     }
     else{
-        console.log("Correct Google Account Logged in")
+        console.log("Correct Google Account Logged in \n\n")
     }
     // check if logged in with correct email, if not correct email then return to login page and display error
     cb(null, profile)
@@ -112,13 +152,6 @@ function isLoggedIn(req, res, next) {
       res.redirect("/");
     }
   }
-
-function isApiKeyValid(apiKeyValue){
-    if(!apiKeyValue == app.locals.activeApiKey.keyValue){
-        return false
-    }
-    return true 
-}
 
 app.post('/sendSecretStuff', function (req, res) {
     console.log(req.body['data'])
@@ -163,26 +196,11 @@ app.get('/auth/isLoggedInCheck', (req, res)=>{
 
 app.get('/getAPIKey', isLoggedIn, (req, res)=>{
     // Implementation for if there can only be one api key
-    const API_KEY_TIME_TO_LIVE = 1000 * 60 * 2 // ms in a second * number = how many seconds to live
 
-    function isApiKeyValid(apiKeyInfo){
-        currentTime = new Date()
-        if((currentTime - apiKeyInfo.timeOfCreation) > apiKeyInfo.timeToLiveInMS){
-            return false
-        }
-        return true
-    }
-
-    function KeyInfo(timeToLiveInMillisecond, keyValue){
-        this.timeToLiveInMS = timeToLiveInMillisecond
-        this.keyValue = keyValue
-        this.timeOfCreation = new Date() 
-    }
-
-    if (typeof req.app.locals.activeApiKey == 'undefined' || !isApiKeyValid(req.app.locals.activeApiKey)){ 
+    if (typeof req.app.locals.activeApiKey == 'undefined' || isAPIKeyExpired(req.app.locals.activeApiKey)){ 
         req.app.locals.activeApiKey = new KeyInfo(API_KEY_TIME_TO_LIVE, generateAPIKey())
     }
-    
+
     const string = [{
         "data": req.app.locals.activeApiKey.keyValue
     }]
@@ -238,6 +256,17 @@ app.get(
         res.redirect('/')
     }
 )
+
+app.post('/test', (req, res)=>{
+    console.log(req.body)
+    apiKey = req.body.finalArray.apiKey
+    
+    if (!isAPIKeyExpired(apiKey)){
+        res.send(JSON.stringify({"status":"Success"}))
+    }else{
+        res.send(JSON.stringify({"status":"ERROR: Invalid API key"}))
+    }
+})
 
 app.post('/auth/logout', (req, res)=>{
     console.log(req.body)
@@ -300,7 +329,7 @@ app.get('/getData', (req, res)=>{
     let myData = await getData();
 
     res.send(JSON.stringify(myData));
-
+    // myData format = [singleKeyWithJobObj, singleKeyWithJobObj]
    }
 
    getTable();
@@ -310,32 +339,36 @@ app.get('/getData', (req, res)=>{
 
 app.put('/updateTuple',(req, res)=>{
     try{
-
-    updateTuple(req.body);
-    console.log(JSON.stringify(req.body, null, 4));
-    res.send(JSON.stringify({"status":"Success"}))
-
+        updateTuple(req.body);
+        console.log(JSON.stringify(req.body, null, 4));
+        res.send(JSON.stringify({"status":"Success"}))
     } catch{
-        throw ("Invalid data")
-        res.send()
+        res.send(JSON.stringify({"status":"Success"}))
         //need to handle invalid data scenerio
         
     }
 })
 
 app.post('/createNewTuple',(req, res)=>{
+    if(req.body.finalArray.apiKey == undefined){
+        res.send(JSON.stringify({"status":"ERROR: finalArray obj is missing apiKey field"}))
+        return
+    }
+    apiKey = req.body.finalArray.apiKey
     try{
+        if(!(isAPIKeyStringCorrect(apiKey, req.app.locals.activeApiKey.keyValue))){
+            res.send(JSON.stringify({"status":"ERROR: Invalid API key"}))
+            return
+        }
 
-        createNewTuple(req.body);
+        createNewTuple(req.body.finalArray);
         console.log(JSON.stringify(req.body, null, 4));
         res.send(JSON.stringify({"status":"Success"}))
 
-    }catch{
-        throw ("Invalid data")
-        res.send()
+    }catch(e){
+        console.error(e)
+        res.send(JSON.stringify({"status":"ERROR"}))
         //need to handle invalid data scenerio
-
-
     }
 })
 
@@ -358,8 +391,7 @@ app.delete('/deleteTuple',(req, res)=>{
         
 
     }catch{
-        throw ("Invalid data")
-        res.send()
+        res.send(JSON.stringify({"status":"ERROR"}))
         //need to handle invalid data scenerio
 
 
