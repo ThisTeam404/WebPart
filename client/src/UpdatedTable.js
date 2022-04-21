@@ -78,8 +78,35 @@ export const DBTable = ()=> {
 
     }
 
+    function deleteKey(key){
+        return fetch(SITE_URL+'/deleteTuple', {
+            method: "DELETE",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(key)
+
+        })
+        .then(resp=>resp.json())
+    }
+
+    function deleteAllKeysInKeyArr(keyArr){
+        let promiseArr = []
+        let key
+        while(key = keyArr.find((key)=>key.keyLevelType == "GMK")){
+            promiseArr.push(deleteKey(key))
+        }
+        while(key = keyArr.find((key)=>key.keyLevelType == "MK")){
+            promiseArr.push(deleteKey(key))
+        }
+        keyArr.forEach((key)=>{
+            promiseArr.push(deleteKey(key))
+        })
+        console.log(promiseArr)
+        return promiseArr
+    }
+
     const columns = [
-        {title: 'Job ID', field: 'jobID',editable: 'never'},
         {title: 'Brand', field: 'keyway', editable: 'never'},
         {title: 'Combination', field: 'combination', editable: 'never'},
         {title: 'KeyLevelType', field: 'keyLevelType',editable: 'never'},
@@ -89,18 +116,57 @@ export const DBTable = ()=> {
         {title: 'Mk Combination', field: 'MKCombination', editable: 'never'},
         {title: 'Unit', field: 'unit', editable: 'never'},
         {title: 'Door', field: 'door', editable: 'never'},
-        {title: 'Cost', field: 'cost',editable: 'never'},
-        {title: 'Address', field: 'address',editable: 'never'},
-        {title: 'NumKeys', field: 'numkeys',editable: 'never'},
         {title: 'Notes', field: 'notes'},
 
     ]
 
-    function createColumnObject(titleVal, fieldVal, headerStyleObj){
-        return { title: titleVal, field: fieldVal, headerStyleObj}
+    const editFunctions = {
+        // isEditable: rowData => rowData.name === 'Notes',
+        onRowUpdate: (newData, rowData)=> new Promise((resolve, reject)=>{
+            fetch(SITE_URL+'/updateTuple', {
+                method: "PUT",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(newData)
+
+            })
+            .then(resp=>resp.json())
+            .then(resp=>{
+                getDatasFromDB()        //Have to call getDatasFromDB() here otherwise it will be called first before the fetch 
+                                        //finishes its action
+                resolve()
+            })
+        }),
+        onRowDelete: rowData => new Promise((resolve, reject) => {
+            let promiseArr = deleteAllKeysInKeyArr(rowData.keys)
+            Promise.all(promiseArr)
+                .then(response =>{
+                    alert("Delete action was successful")
+                    getDatasFromDB()        //Have to call getDatasFromDB() here otherwise it will be called first before the fetch 
+                                    //finishes its action
+                    resolve()
+                })
+                .catch(e => {
+                    console.log(e)
+                    alert("Delete action was unable to complete")
+                })
+        })
+        .then(resp => console.log(resp))
+        .catch(e => {
+            console.error(e)
+            reject()
+        })
+
+               
+        
     }
 
-    const colHeaderStyler = {headerStyle: { backgroundColor: "gray", color: "white" }}
+    function createColumnObject(titleVal, fieldVal, headerStyleObj){
+        return { title: titleVal, field: fieldVal, headerStyleObj, editable: 'never'}
+    }
+
+    const colHeaderStyler = {headerStyle: { backgroundColor: 'blue', color: "blue" }}
 
     function createMainMaterialTable(){
         console.log('######From ui Table \n %j}', data)
@@ -112,20 +178,24 @@ export const DBTable = ()=> {
                     createColumnObject("Cost", "cost", colHeaderStyler),
                     createColumnObject("Address", "address", colHeaderStyler),
                     createColumnObject("NumKeys", "numKeys", colHeaderStyler),
-                    createColumnObject("Notes", "notes", colHeaderStyler),
+                    {title: 'Notes', field: 'notes', colHeaderStyler}
                 ]}
+                editable={editFunctions}
                 data={data}
+                style={{
+                    backgroundColor: 'lightgray '
+                }}
                 detailPanel={rowData => {
-                   return(
+                    return(
                         <MaterialTable
-                            title=""
+                            title={"Keys For Job " + rowData.jobID}
                             columns={columns}
                             data={rowData.keys}
                             style={{
-                                backgroundColor: '#198754'
+                                backgroundColor: 'white'
                             }}
                         />
-                   )
+                    )
                 }}
             />
         )

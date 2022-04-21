@@ -72,8 +72,6 @@ export const DBTable = ()=> {
             editable={{
                 // isEditable: rowData => rowData.name === 'Notes',
                 onRowUpdate: (newData, oldData)=> new Promise((resolve, reject)=>{
-                
-                    
                     fetch(SITE_URL+'/updateJobTable', {
                         method: "PUT",
                         headers: {
@@ -90,22 +88,21 @@ export const DBTable = ()=> {
                     })
                 }),
                 onRowDelete: oldData =>
-                new Promise((resolve, reject) => {
-                    fetch(SITE_URL+'/deleteTuple', {
-                        method: "DELETE",
-                        headers: {
-                            "Content-type": "application/json"
-                        },
-                        body: JSON.stringify(oldData)
+                    new Promise((resolve, reject) => {
+                        fetch(SITE_URL+'/deleteTuple', {
+                            method: "DELETE",
+                            headers: {
+                                "Content-type": "application/json"
+                            },
+                            body: JSON.stringify(oldData)
 
-                    })
-                    .then(resp=>resp.json())
-                    .then(resp=>{
-                        getDatasFromDB()        //Have to call getDatasFromDB() here otherwise it will be called first before the fetch 
-                                                //finishes its action
-                        resolve()
-                    })
-
+                        })
+                        .then(resp=>resp.json())
+                        .then(resp=>{
+                            getDatasFromDB()        //Have to call getDatasFromDB() here otherwise it will be called first before the fetch 
+                                                    //finishes its action
+                            resolve()
+                        })
                 })
                 
             }}
