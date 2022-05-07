@@ -1,5 +1,7 @@
 # The Smiling Locksmith: Web App
 
+<img width="400" height="400" src="https://github.com/ThisTeam404/WebPart/blob/main/client/src/OfficialLogo.PNG" />
+
 ## Project Structure
 This project is custom software made for The Smiling Locksmith®.
 The project is split into 2 main components: the phone app and the web application
@@ -72,9 +74,6 @@ GOOGLE_AUTH_CALLBACK_URL="https://example.com"
 GOOGLE_AUTH_VALID_Email_ID="RandomID_asdasdad123"
 ```
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
-
 ### Executing program locally (This still requires you to have your database setup first before runnning)
 
 * Go into the 'server' folder
@@ -89,12 +88,12 @@ More indepth details for getting the web application setup online is available i
 
 
 ## Devlopers
-Anthony Herrera
-Milford Gover
-Matthew Murata
-Kaily Estepa
-Sia Xiong
-Justin Moua
-Saba Taghibeik
+Anthony Herrera</br>
+Milford Gover</br>
+Matthew Murata</br>
+Kaily Estepa</br>
+Sia Xiong</br>
+Justin Moua</br>
+Saba Taghibeik</br>
 
 
