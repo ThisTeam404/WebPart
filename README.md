@@ -37,7 +37,7 @@ This repository is for the website that will display the saved key pins. Each ti
 
 ### Installing (Installing Steps Only Describe Installation For Windows 10)
 
-#### Where to download the web application code:
+#### Where To Download The Web Application Code:
 * Go to GitHub and clone the repository at ThisTeam404/WebPart for the mobile app to interact with github.com to get the Web Application code that will eventually be loaded onto the heroku server created earlier.
 
 #### Downloading and Installing Dependencies:
@@ -47,10 +47,10 @@ This repository is for the website that will display the saved key pins. Each ti
 
 * Next go to the parent folder of the ‘server’ folder, and then change the directory to the ‘client’ folder. Again using the command console, use the command ‘npm install’ to install all the code dependencies for the front end code in the ‘client’ folder.
 
-#### Setting up the .env file:
+#### Setting Up The .env File:
 * In the Web Application code, you need to add two files with the name ‘.env’ into the ‘server’ folder and the ‘client’ folder. This file will contain all of the outside required information to run the Web Application with the Online Database and Google sign in. (For help with setting up the online database or finding the google auth information, please check out the maintenance manual).
 
-##### .env file example:
+##### .env File Example:
 ```
 REACT_APP_WEB_MODE_ENABLED="false"
 REACT_APP_WEBSITE_URL="https://example.com"
