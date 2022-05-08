@@ -38,7 +38,7 @@ This repository is for the website that will display the saved key pins. Each ti
 ### Installing (Installing Steps Only Describe Installation For Windows 10)
 
 #### Where to download the web application code:
-* Go to GitHub and clone the repository at ThisTeam404/WebPart Web based part for mobile app to interact with (github.com) to get the Web Application code that will eventually be loaded onto the heroku server created earlier.
+* Go to GitHub and clone the repository at ThisTeam404/WebPart for the mobile app to interact with (github.com) to get the Web Application code that will eventually be loaded onto the heroku server created earlier.
 
 #### Downloading and Installing Dependencies:
 * Using the command console on your machine go to the folder where you cloned and the WebPart repository.
