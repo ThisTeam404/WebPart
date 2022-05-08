@@ -35,7 +35,7 @@ This repository is for the website that will display the saved key pins. Each ti
     "sequelize": "^6.15.0"
 ```
 
-### Installing (Installing Steps Only Describe Installation For Windows 10)
+### Installing (These Steps Only Describe Installation For Windows 10)
 
 #### Where To Download The Web Application Code:
 * Go to GitHub and clone the repository at ThisTeam404/WebPart for the mobile app to interact with github.com to get the Web Application code that will eventually be loaded onto the heroku server created earlier.
