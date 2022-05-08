@@ -80,7 +80,6 @@ GOOGLE_AUTH_VALID_Email_ID="RandomID_asdasdad123"
 * Change WEBSITE_URL fields to http://localhost:3000
 * Go into the 'server' folder
 * Open command prompt and run the command:
-* 
 ```
 node index.js
 ```
