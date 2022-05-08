@@ -15,7 +15,7 @@ The goal of this project is to have an app that generates key pins for door lock
 
 This repository is for the website that will display the saved key pins. Each time the locksmith works on a lock he'll generate the key pins on the iPhone and save it on our database. He can retrieve the key pins in the future by looking it up from the database using the website interface. There is another repository that holds the iPhone codes.
 
-## Getting Started (The Steps shown below are done on Windows 10)
+## Getting Started (The Steps Shown Below Are Done On Windows 10)
 
 ### Dependencies
 * Windows 10 or macOS Monterey (The steps below are done on Windows 10) 
@@ -35,7 +35,7 @@ This repository is for the website that will display the saved key pins. Each ti
     "sequelize": "^6.15.0"
 ```
 
-### Installing (Installing Steps only describe installation for Windows 10)
+### Installing (Installing Steps Only Describe Installation For Windows 10)
 
 #### Where to download the web application code:
 * Go to GitHub and clone the repository at ThisTeam404/WebPart Web based part for mobile app to interact with (github.com) to get the Web Application code that will eventually be loaded onto the heroku server created earlier.
