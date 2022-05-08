@@ -40,17 +40,17 @@ This repository is for the website that will display the saved key pins. Each ti
 #### Where to download the web application code:
 * Go to GitHub and clone the repository at ThisTeam404/WebPart Web based part for mobile app to interact with (github.com) to get the Web Application code that will eventually be loaded onto the heroku server created earlier.
 
-#### Downloading and Installing Dependencies
+#### Downloading and Installing Dependencies:
 * Using the command console on your machine go to the folder where you cloned and the WebPart repository.
 
 * Then change the directory to the folder called ‘server’ and run the command ‘npm install’ (you will need to install npm on your machine if you do not have it). This will install all the code dependencies for the backend code in the server folder.
 
 * Next go to the parent folder of the ‘server’ folder, and then change the directory to the ‘client’ folder. Again using the command console, use the command ‘npm install’ to install all the code dependencies for the front end code in the ‘client’ folder.
 
-#### Setting up the .env file
+#### Setting up the .env file:
 * In the Web Application code, you need to add two files with the name ‘.env’ into the ‘server’ folder and the ‘client’ folder. This file will contain all of the outside required information to run the Web Application with the Online Database and Google sign in. (For help with setting up the online database or finding the google auth information, please check out the maintenance manual).
 
-##### .env file example
+##### .env file example:
 ```
 REACT_APP_WEB_MODE_ENABLED="false"
 REACT_APP_WEBSITE_URL="https://example.com"
