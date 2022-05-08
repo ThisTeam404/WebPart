@@ -7,8 +7,8 @@ This project is custom software made for The Smiling Locksmith®.
 The project is split into 2 main components: the phone app and the web application
 The phone app and web application are separated into separate repositories.
 
-This is the link to the phone app repository: https://github.com/ThisTeam404/WebPart</br>
-This is the link to the web application repository: https://github.com/ThisTeam404/Mobile-App</br>
+This is the link to the phone app repository: https://github.com/ThisTeam404/Mobile-App</br>
+This is the link to the web application repository: https://github.com/ThisTeam404/WebPart</br>
 
 ## Description
 The goal of this project is to have an app that generates key pins for door locks. This app will be used by a locksmith who currently has to manually come up with different key pins each time he works on a job.
