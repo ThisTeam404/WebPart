@@ -74,7 +74,7 @@ GOOGLE_AUTH_CALLBACK_URL="https://example.com"
 GOOGLE_AUTH_VALID_Email_ID="RandomID_asdasdad123"
 ```
 
-### Executing program locally (This still requires you to have your database and Google signin setup first before running)
+### Executing Program Locally (This still requires you to have your database and Google sign in setup first before running)
 
 * Fill in all fields for GOOGLE_AUTH and DATABASE_HOST in .env file
 * Change WEBSITE_URL fields to http://localhost:3000
