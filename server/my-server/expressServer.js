@@ -20,8 +20,20 @@ const GOOGLE_AUTH_CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID
 const GOOGLE_AUTH_SECRET = process.env.GOOGLE_AUTH_SECRET
 const GOOGLE_AUTH_CALLBACK_URL = process.env.WEB_MODE_ENABLED == "false" ? SITE_URL + "/auth/success" : process.env.GOOGLE_AUTH_CALLBACK_URL
 const GOOGLE_AUTH_VALID_Email_ID = process.env.GOOGLE_AUTH_VALID_Email_ID   // The Google Account email that the server will allow to log in
+const TEST_MODE_ENABLED = process.env.TEST_MODE_ENABLED
 
-console.log(SITE_URL, GOOGLE_AUTH_CALLBACK_URL)
+//console.log(SITE_URL, GOOGLE_AUTH_CALLBACK_URL)
+
+if (TEST_MODE_ENABLED){
+    console.error("Test Mode is enabled, turn test mode off when in production")
+    console.error("Test Mode is enabled, turn test mode off when in production")
+    console.error("Test Mode is enabled, turn test mode off when in production")
+    console.error("Test Mode is enabled, turn test mode off when in production")
+    console.error("Test Mode is enabled, turn test mode off when in production")
+    console.error("Test Mode is enabled, turn test mode off when in production")
+    console.error("Test Mode is enabled, turn test mode off when in production")
+}
+
 
 // const MemoryStore = require('memorystore')(session);
 
@@ -63,6 +75,10 @@ function isAPIKeyExpired(apiKeyInfo){
 }
 
 function isAPIKeyStringCorrect(incomingAPIKeyString, currentAPIKeyString){
+    if (TEST_MODE_ENABLED){
+        return true
+    }
+
     if(incomingAPIKeyString == currentAPIKeyString){
         return true
     }
@@ -114,19 +130,12 @@ passport.use(new GoogleStrategy({
   },
   function verify(req, accessToken, refreshToken, profile, cb)
   {
-    console.log('Logged in for %j}', profile.emails)
-    if (profile.emails != GOOGLE_AUTH_VALID_Email_ID){
-        console.log("\n\nWrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
-        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
-        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
-        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
-        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
-        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login")
-        console.log("Wrong Google Account Logged in. Uncomment line in verify() to only allow for valid user to login \n\n")
-        //return cb("Attempted to login with invalid google account.", null)
+    //console.log('Logged in for %j}', profile.emails)
+    if (profile.emails != GOOGLE_AUTH_VALID_Email_ID && !TEST_MODE_ENABLED){
+        return cb("Attempted to login with invalid google account.", null)
     }
     else{
-        console.log("Correct Google Account Logged in \n\n")
+        //console.log("Correct Google Account Logged in \n\n")
     }
     // check if logged in with correct email, if not correct email then return to login page and display error
     cb(null, profile)
@@ -153,26 +162,8 @@ function isLoggedIn(req, res, next) {
     }
   }
 
-app.post('/sendSecretStuff', function (req, res) {
-    console.log(req.body['data'])
-    const string = [{
-    "data":"Server recievd your stuff: " + req.body['data']
-    }]
-    res.send(JSON.stringify(string))
-});
-
-  app.get('/t', function (req, res) {
-    const string = [{
-        "name": "egegegeg",
-        "msg": "ASDSAD",
-        "username": "asdsadsad"
-    }]
-    console.log(string)
-    res.send(JSON.stringify(string))
-  });
-
 app.get('/', (req, res)=>{
-    console.log(__dirname)
+    //console.log(__dirname)
     //res.sendFile(__dirname + '/index.html')
     res.sendFile(path.join(__dirname, '../build/index.html'))
 })
@@ -183,10 +174,10 @@ app.post('/', (req, res)=>{
 })
 
 app.get('/auth/isLoggedInCheck', (req, res)=>{
-    console.log("%j", req.body)
-    console.log("%j", req.params)
-    console.log("%j", req.query)
-    console.log("%j", req.session)
+    //console.log("%j", req.body)
+    //console.log("%j", req.params)
+    //console.log("%j", req.query)
+    //console.log("%j", req.session)
     if (req.isAuthenticated()) {
         res.send({"result": "true"})
       } else {
@@ -205,11 +196,9 @@ app.get('/getAPIKey', isLoggedIn, (req, res)=>{
         "data": req.app.locals.activeApiKey.keyValue
     }]
 
-    console.log(req.app.locals.activeApiKey)
+    //console.log(req.app.locals.activeApiKey)
     res.send(JSON.stringify(string))
     
-    //console.log(apiKey)
-
     /* Implementation for if there can be more than 1 api key
     const removeDeadApiKeys = (arrOfApiKeyObjects) =>{
         currentTime = new Date()
@@ -250,55 +239,19 @@ app.get(
         const string = [{
             "loginStatus":"true"
         }]
-        console.log("isAuth? ", req.isAuthenticated())
+        //console.log("isAuth? ", req.isAuthenticated())
         //res.send(JSON.stringify(string))
         //res.sendFile(path.join(__dirname, '../build/index.html'))
         res.redirect('/')
     }
 )
 
-app.post('/test', (req, res)=>{
-    console.log(req.body)
-    apiKey = req.body.finalArray.apiKey
-    
-    if (!isAPIKeyExpired(apiKey)){
-        res.send(JSON.stringify({"status":"Success"}))
-    }else{
-        res.send(JSON.stringify({"status":"ERROR: Invalid API key"}))
-    }
-})
-
 app.post('/auth/logout', (req, res)=>{
-    console.log(req.body)
+    //console.log(req.body)
     req.logOut()
     const string = {
         "data":"Successfully Logged out"
     }
-    res.send(JSON.stringify(string))
-})
-
-app.get('/secret', isLoggedIn, (req, res)=>{
-    const string = [{
-        "data":"This is the secret data from the server"
-    }]
-    console.log("%j", req.body)
-    console.log("%j", req.params)
-    console.log("%j", req.query)
-    console.log("%j", req.session)
-    res.send(JSON.stringify(string))
-})
-
-app.get('/secret1', isLoggedIn, (req, res)=>{
-    const string = [{
-        "data":"This is the secret1 data from the server"
-    }]
-    res.send(JSON.stringify(string))
-})
-
-app.get('/secret2', isLoggedIn, (req, res)=>{
-    const string = [{
-        "data":"This is the secret2 data from the server"
-    }]
     res.send(JSON.stringify(string))
 })
 
@@ -308,7 +261,7 @@ app.get('/database', isLoggedIn, (req, res)=>{
 
         let sessionTB = await SessionTable.findAll();
 
-        console.log(`Object type: ${JSON.stringify(sessionTB)}`);
+        //console.log(`Object type: ${JSON.stringify(sessionTB)}`);
         myData = JSON.stringify(sessionTB);
 
         const string = [{
@@ -322,7 +275,7 @@ app.get('/database', isLoggedIn, (req, res)=>{
 
 })
 
-app.get('/getData', (req, res)=>{
+app.get('/getData', isLoggedIn, (req, res)=>{
 
    const getTable = async() => {
     
@@ -337,10 +290,10 @@ app.get('/getData', (req, res)=>{
 })
 
 
-app.put('/updateTuple',(req, res)=>{
+app.put('/updateTuple', isLoggedIn, (req, res)=>{
     try{
         updateTuple(req.body);
-        console.log(JSON.stringify(req.body, null, 4));
+        //console.log(JSON.stringify(req.body, null, 4));
         res.send(JSON.stringify({"status":"Success"}))
     } catch{
         res.send(JSON.stringify({"status":"Success"}))
@@ -362,17 +315,17 @@ app.post('/createNewTuple',(req, res)=>{
         }
 
         createNewTuple(req.body.finalArray);
-        console.log(JSON.stringify(req.body, null, 4));
+        //console.log(JSON.stringify(req.body, null, 4));
         res.send(JSON.stringify({"status":"Success"}))
 
     }catch(e){
-        console.error(e)
+        //console.error(e)
         res.send(JSON.stringify({"status":"ERROR"}))
         //need to handle invalid data scenerio
     }
 })
 
-app.delete('/deleteTuple',(req, res)=>{
+app.delete('/deleteTuple', isLoggedIn, (req, res)=>{
     try{
 
         const deleteTable = async() => {

@@ -1,14 +1,9 @@
+import React from 'react';
 import './App.css';
 import "./web.css"
-import React from 'react';
 import {DBTable} from './Table.js'
 import MyLogin from './components/MyLogin.js';
 import Footer from './components/footerComponent.js'
-
-
-/*
-  - further investigate bug where first login attempt will not automatically log in user
-*/
 
 
 

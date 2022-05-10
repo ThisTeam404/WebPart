@@ -4,9 +4,6 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
     "material-table": "^1.69.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -14,10 +11,20 @@
     "react-scripts": "5.0.0",
     "web-vitals": "^2.1.4"
   },
+  "devDependecies": {
+    "@testing-library/react": "^12.1.2",
+    "@babel/preset-react": "^7.16.7",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@babel/preset-env": "^7.16.11",
+    "babel-jest": "^27.5.1",
+    "jest": "^27.5.1"
+    
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest --env=jsdom --config ./jest.config.json",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:3000",

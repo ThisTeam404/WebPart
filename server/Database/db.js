@@ -136,19 +136,19 @@ async function createNewTuple(finalArray) {
     
                 if(ourJson.grandMasterKey.length){
                     for(i in ourJson.grandMasterKey){
-                        console.log("************* add ketys")
+                        //console.log("************* add ketys")
                         await Key.create(ourJson.grandMasterKey[i])
                     }
                 }
                 if(ourJson.masterKeys.length){
                     for(i in ourJson.masterKeys){
-                        console.log("************* add ketys")
+                        //console.log("************* add ketys")
                         await Key.create(ourJson.masterKeys[i])
                     }
                 }
                 if(ourJson.regularKeys.length){
                     for(i in ourJson.regularKeys){
-                        console.log("************* add ketys")
+                        //console.log("************* add ketys")
                         await Key.create(ourJson.regularKeys[i])
                     }
             }

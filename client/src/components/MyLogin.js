@@ -3,7 +3,7 @@ import '../web.css'
 
 import {DBTable} from '../UpdatedTable.js'
 
-console.log(process.env)
+//console.log(process.env)
 
 
 const PORT = process.env.PORT || 3000;
@@ -22,7 +22,7 @@ export default class Login extends React.Component {
     setTimeout(this.checkIfLoggedIn.bind(this), 2000) // delay to login check is needed so that check does not occur before auth process on server has finished
     //setInterval(this.getAPIKey.bind(this), 5000)
     setInterval(this.hideApiKey.bind(this), 25000)
-    console.log("Component mounted")
+    //console.log("Component mounted")
   }
 
   checkIfLoggedIn(){
@@ -70,7 +70,7 @@ export default class Login extends React.Component {
         return response.json()
       })
       .then(resp =>{
-          console.log(resp[0].data)
+          //console.log(resp[0].data)
           const key = resp[0].data 
           if (key != ""){
             this.setState({...this.state, apiKey:key, isApiKeyDisplayed:true})

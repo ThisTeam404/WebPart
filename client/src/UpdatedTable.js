@@ -20,23 +20,28 @@ export const DBTable = ()=> {
         let jobArr = []
 
         arrayOfKeysToSort.forEach(element => {
+            if (element.jobID == undefined){
+                //console.log(element)
+                return
+            }
+
             let job = jobArr.find((e)=>e.jobID == element.jobID)
 
-            if(job){
-                job.keys.push(element)
-            }else {
-                // create job object and add element to job object
-                let job = new jobObj(
-                    element.jobID, 
-                    element.cost,
-                    element.address,
-                    true,
-                    element.notes,
-                    element.numkeys,
-                    [element]
-                )
-                jobArr.push(job)
-            }
+                if(job){
+                    job.keys.push(element)
+                }else {
+                    // create job object and add element to job object
+                    let job = new jobObj(
+                        element.jobID, 
+                        element.cost,
+                        element.address,
+                        true,
+                        element.notes,
+                        element.numkeys,
+                        [element]
+                    )
+                    jobArr.push(job)
+                }
         })
         return jobArr
     }
@@ -71,8 +76,8 @@ export const DBTable = ()=> {
         .then(resp=>{
             setData(groupDataFromDbByJobs(resp))
             //setData(resp)
-            console.log(`From table UI: ${resp}`)
-            console.log('@@@@@@From ui Table \n %j}', data)
+            //console.log(`From table UI: ${resp}`)
+            //console.log('@@@@@@From ui Table \n %j}', data)
 
         })
 
@@ -91,19 +96,37 @@ export const DBTable = ()=> {
     }
 
     function deleteAllKeysInKeyArr(keyArr){
-        let promiseArr = []
-        let key
-        while(key = keyArr.find((key)=>key.keyLevelType == "GMK")){
-            promiseArr.push(deleteKey(key))
+        let promiseGMKArr = []
+        let promiseMKArr = []
+        let promiseCKArr = []
+        for(const i in keyArr){
+            if (keyArr[i].keyLevelType == "GMK"){
+                if(keyArr[i].jobID == undefined){
+                    console.log(keyArr[i])
+                    continue
+                }
+                promiseGMKArr.push(deleteKey(keyArr[i]))
+            }
         }
-        while(key = keyArr.find((key)=>key.keyLevelType == "MK")){
-            promiseArr.push(deleteKey(key))
+        for(const i in keyArr){
+            if (keyArr[i].keyLevelType == "MK"){
+                if(keyArr[i].jobID == undefined){
+                    console.log(keyArr[i])
+                    continue
+                }
+                promiseMKArr.push(deleteKey(keyArr[i]))
+            }
         }
-        keyArr.forEach((key)=>{
-            promiseArr.push(deleteKey(key))
-        })
-        console.log(promiseArr)
-        return promiseArr
+        for(const i in keyArr){
+            if (keyArr[i].keyLevelType == "CK"){
+                if(keyArr[i].jobID == undefined){
+                    console.log(keyArr[i])
+                    continue
+                }
+                promiseCKArr.push(deleteKey(keyArr[i]))
+            }
+        }
+        return {"gmk":promiseGMKArr, "mk":promiseMKArr, "ck":promiseCKArr} 
     }
 
     const columns = [
@@ -140,8 +163,17 @@ export const DBTable = ()=> {
         }),
         onRowDelete: rowData => new Promise((resolve, reject) => {
             let promiseArr = deleteAllKeysInKeyArr(rowData.keys)
-            Promise.all(promiseArr)
+            Promise.all(promiseArr.gmk)
                 .then(response =>{
+                    console.log("finished deleteing GMK")
+                    return Promise.all(promiseArr.mk)
+                })
+                .then(response =>{
+                    console.log("finished deleteing MK")
+                    return Promise.all(promiseArr.ck)
+                })
+                .then(response =>{
+                    console.log("finished deleteing MK")
                     alert("Delete action was successful")
                     getDatasFromDB()        //Have to call getDatasFromDB() here otherwise it will be called first before the fetch 
                                     //finishes its action
@@ -169,7 +201,7 @@ export const DBTable = ()=> {
     const colHeaderStyler = {headerStyle: { backgroundColor: 'blue', color: "blue" }}
 
     function createMainMaterialTable(){
-        console.log('######From ui Table \n %j}', data)
+        //console.log('######From ui Table \n %j}', data)
         return(
             <MaterialTable
                 title="Jobs"
@@ -202,7 +234,7 @@ export const DBTable = ()=> {
     }
 
     function createNestedMaterialTable(rowData){
-        console.log(`rowdata %j`, rowData)
+        //console.log(`rowdata %j`, rowData)
         return(
             <MaterialTable
                 title=""

@@ -38,7 +38,7 @@ export const DBTable = ()=> {
         .then(resp=>resp.json())
         .then(resp=>{
             setData(resp)
-            console.log(`From table UI: ${resp}`);
+            //console.log(`From table UI: ${resp}`);
 
         })
 
